@@ -1,0 +1,58 @@
+CREATE TABLE Student (
+    studentId INT PRIMARY KEY,
+    fullName VARCHAR(100) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    gender VARCHAR(10) NOT NULL,
+    phoneNum VARCHAR(15) NOT NULL,
+    regDate DATE NOT NULL,
+    educationalStatus VARCHAR(20),  -- Alvl/Olvl/inter/Matric/None
+    currentClass VARCHAR(20) NOT NULL, -- class(KG--A2)/None
+    bio TEXT
+);
+
+CREATE TABLE Tutor (
+    tutorId INT PRIMARY KEY,
+    fullName VARCHAR(100) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    gender VARCHAR(10) NOT NULL,
+    phoneNum VARCHAR(15) NOT NULL,
+    regDate DATE NOT NULL,
+    professionalSummary TEXT
+);
+
+
+CREATE TABLE Gig (
+    gigId INT PRIMARY KEY AUTO_INCREMENT,
+    studentId INT,
+    gigTitle VARCHAR(255) NOT NULL, --
+    studentsinstitute VarChar,
+    studentArea Varchar,
+    ExpectedFee INT NOT NULL,
+    createdAt DATE DEFAULT CURRENT_TIMESTAMP,
+    status VARCHAR(20),
+    details TEXT,
+    gigType VARCHAR(20) NOT NULL, // online,home
+    FOREIGN KEY (studentId) REFERENCES Student(studentId) ON DELETE CASCADE,
+);
+CREATE TABLE TutorGigApplication (
+    gigId INT,
+    tutorId INT,
+    applicationStatus ENUM('approved', 'rejected', 'pending') DEFAULT 'pending',
+    appliedAt Date DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (gigId, tutorId),
+    FOREIGN KEY (gigId) REFERENCES Gig(gigId) ON DELETE CASCADE,
+    FOREIGN KEY (tutorId) REFERENCES Tutor(tutorId) ON DELETE CASCADE
+);
+
+CREATE TABLE StudentTutorAssignment (
+    studentId INT,
+    tutorId INT,
+    gigId INT,
+    assignedDate Date
+    PRIMARY KEY (studentId, tutorId),
+    FOREIGN KEY (studentId) REFERENCES Student(studentId) ON DELETE CASCADE,
+    FOREIGN KEY (tutorId) REFERENCES Tutor(tutorId) ON DELETE CASCADE,
+    FOREIGN KEY (gigId) REFERENCES Gig(gigId) ON DELETE CASCADE
+);
