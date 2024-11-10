@@ -51,7 +51,7 @@ function Sidebar() {
           </NavLink>
 
           <NavLink
-            to='/settings'
+            to='/dashboard/settings'
             className={({ isActive }) => 
               `p-3 text-sm font-medium ${isActive ? "text-orange-700" : "text-gray-700"} hover:text-gray-900`
             }

@@ -14,8 +14,6 @@ function TeacherDashboard(props) {
         <main className="flex-1 p-4 bg-gray-50">
           <DashboardHeader user="Ashhad Hassan Siddiqui" />
           <Outlet/>
-          {/* <StatsCardList />
-          <StudentList /> */}
         </main>
       </div>
     )

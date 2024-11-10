@@ -12,6 +12,8 @@ import StudentList from './components/StudentList.jsx'
 import FindGigs from './components/FindGigs.jsx'
 import AppliedGigs from './components/AppliedGigs.jsx'
 import DisplayGig from './components/DisplayGig.jsx'
+import HomeCard from './components/subcomponents/HomeCard.jsx'
+import Settings from './components/Settings.jsx'
 //import Login from './components/LoginModal.jsx'
 
 const router = createBrowserRouter(
@@ -28,10 +30,12 @@ const router = createBrowserRouter(
     </Route>
 
     <Route path='/dashboard' element={<TeacherDashboard/>}>
+      <Route path='' element={<HomeCard />} />
       <Route path='students' element={<StudentList/>} />
       <Route path='find-gigs' element={<FindGigs/>} />
       <Route path='applied-gigs' element={<AppliedGigs/>} />
       <Route path='gig-details/:gigId/:isApplied' element={<DisplayGig/>} />
+      <Route path='settings' element={<Settings/>} />
     </Route>
     </>
 
