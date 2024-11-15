@@ -6,17 +6,17 @@ import { API_NINJA_KEY } from '../../utils/KEYS';
 const HomeCard = () => {
     const [user,setUser] =useState("Example")
     const [quote, setQuote] = useState({})
-    useEffect(() =>{
-        fetch('https://api.api-ninjas.com/v1/quotes?category=education', {
-            method: 'GET',
-            headers: {
-              'X-Api-Key': API_NINJA_KEY, // Replace 'apiKey' with your actual API key
-            },
-        })
-        .then((res) => res.ok ? res.json(): Promise.reject('Failed to fetch quote'))
-        .then(data => setQuote(data[0]))
-        .catch(error => console.error('Error fetching the quote:', error))
-    },[])
+    // useEffect(() =>{
+    //     fetch('https://api.api-ninjas.com/v1/quotes?category=education', {
+    //         method: 'GET',
+    //         headers: {
+    //           'X-Api-Key': API_NINJA_KEY, // Replace 'apiKey' with your actual API key
+    //         },
+    //     })
+    //     .then((res) => res.ok ? res.json(): Promise.reject('Failed to fetch quote'))
+    //     .then(data => setQuote(data[0]))
+    //     .catch(error => console.error('Error fetching the quote:', error))
+    // },[])
 
   return (
     <>
