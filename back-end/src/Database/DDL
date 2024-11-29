@@ -22,25 +22,25 @@ CREATE TABLE Tutor (
     professionalSummary TEXT
 );
 
-
 CREATE TABLE Gig (
     gigId INT PRIMARY KEY AUTO_INCREMENT,
     studentId INT,
-    gigTitle VARCHAR(255) NOT NULL, --
-    studentsinstitute VarChar,
-    studentArea Varchar,
+    gigTitle VARCHAR(255) NOT NULL,
+    studentsinstitute VARCHAR(255),  
+    studentArea VARCHAR(255),  
     ExpectedFee INT NOT NULL,
-    createdAt DATE DEFAULT CURRENT_TIMESTAMP,
-    status VARCHAR(20),
+    createdAt DATE NOT NULL,
+    status VARCHAR(20) NOT NULL,  -- open or closed
     details TEXT,
-    gigType VARCHAR(20) NOT NULL, // online,home
-    FOREIGN KEY (studentId) REFERENCES Student(studentId) ON DELETE CASCADE,
+    gigType VARCHAR(20) NOT NULL, 
+    FOREIGN KEY (studentId) REFERENCES Student(studentId) ON DELETE CASCADE
 );
+
 CREATE TABLE TutorGigApplication (
     gigId INT,
     tutorId INT,
     applicationStatus ENUM('approved', 'rejected', 'pending') DEFAULT 'pending',
-    appliedAt Date DEFAULT CURRENT_TIMESTAMP,
+    appliedAt DATE NOT NULL,
     PRIMARY KEY (gigId, tutorId),
     FOREIGN KEY (gigId) REFERENCES Gig(gigId) ON DELETE CASCADE,
     FOREIGN KEY (tutorId) REFERENCES Tutor(tutorId) ON DELETE CASCADE
@@ -50,9 +50,25 @@ CREATE TABLE StudentTutorAssignment (
     studentId INT,
     tutorId INT,
     gigId INT,
-    assignedDate Date
-    PRIMARY KEY (studentId, tutorId),
+    assignedDate DATE NOT NULL,
+    PRIMARY KEY (studentId, tutorId, gigId),
     FOREIGN KEY (studentId) REFERENCES Student(studentId) ON DELETE CASCADE,
     FOREIGN KEY (tutorId) REFERENCES Tutor(tutorId) ON DELETE CASCADE,
-    FOREIGN KEY (gigId) REFERENCES Gig(gigId) ON DELETE CASCADE
+    FOREIGN KEY (gigId) REFERENCES Gig(gigId) ON DELETE CASCADE
+);
+
+CREATE TABLE Admin (
+    adminId INT PRIMARY KEY,
+    fullName VARCHAR(100) NOT NULL,  -- Added length for VARCHAR
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    phoneNumber VARCHAR(15) NOT NULL  -- Added length for VARCHAR
+);
+
+CREATE TABLE AdminGigAssignment (
+    adminId INT,
+    gigId INT,
+    assignedDate DATE,
+    PRIMARY KEY (adminId, gigId),
+    FOREIGN KEY (gigId) REFERENCES Gig(gigId) ON DELETE CASCADE
 );
