@@ -1,8 +1,6 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import Sidebar from './Sidebar'
 import DashboardHeader from './subcomponents/DashboardHeader'
-import StatsCardList from './StatsCardList'
 import { Outlet } from 'react-router-dom'
 
 

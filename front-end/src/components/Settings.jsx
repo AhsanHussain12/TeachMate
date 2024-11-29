@@ -1,17 +1,44 @@
 import { useState, useEffect } from 'react';
 import FailedAlert from './subcomponents/FailedAlert';
 import SuccessAlert from './subcomponents/SuccessAlert';
+import axios from 'axios';
+
+// {
+//   fullName: 'John Doe',
+//   email: 'johndoe@example.com',
+//   phoneNumber: '123-456-7890',
+//   gender: 'Male',
+// }
 
 const Settings = () => {
   const [activeSection, setActiveSection] = useState('profile-info');
   const [alert, setAlert] = useState({ type: "", message: "" });
 
-  const [profile, setProfile] = useState({
-    fullName: 'John Doe',
-    email: 'johndoe@example.com',
-    phoneNumber: '123-456-7890',
-    gender: 'Male',
-  });
+  const [profile, setProfile] = useState({});
+
+  // fetch api data for profile information display (complete)
+  useEffect(()=>{
+    const fetchData = async ()=>{
+      const url = 'http://localhost:3000/api/v1/teacher/get/my-profile'; // Replace with your API endpoint
+      const token = 'your-jwt-token'; // Replace with your actual JWT token
+      try {
+       const response = await axios.get(url,{
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+       })
+       console.log(response.data[0])
+       setProfile(response.data[0]) 
+      } 
+      catch (error) {
+        console.error('Error fetching data:', error.response?.data || error.message);
+        setAlert({ type: 'error', message: 'Error fetching data' });
+      }
+
+    }
+
+    fetchData()
+  },[])
 
   const [passwords, setPasswords] = useState({
     oldPassword: '',
@@ -24,48 +51,89 @@ const Settings = () => {
     { to: '#change-password', name: 'Change Password' },
   ];
 
-  // Handle password change
+  // Handle and post password change (complete)
   const handlePasswordChange = async () => {
-    if (passwords.newPassword !== passwords.confirmNewPassword && passwords.newPassword.length > 0) {
+    if (passwords.newPassword !== passwords.confirmNewPassword ) {
       setAlert({ type: "error", message: "New passwords don't match" });
-    } else {
+    }
+    else if (passwords.newPassword.length <= 0){
+      setAlert({ type: "error", message: "New Password Required" }); 
+    }
+    else if(passwords.oldPassword.length <= 0){
+      setAlert({ type: "error", message: "Old Password Required" });
+    }
+    else {
       try {
-        const response = await fetch('/api/change-password', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
+        
+        const url="http://localhost:3000/api/v1/teacher/post/my-profile/change-password"
+        const token = "shdjkhajkh"; //localStorage.getItem('jwtToken'); 
+
+        const response = await axios.post(url,
+          {
             oldPassword: passwords.oldPassword,
             newPassword: passwords.newPassword,
-          }),
-        });
-        const result = await response.json();
-        if (response.ok) {
+          },
+          {
+            headers: {
+              'Authorization': `Bearer ${token}`,  // Attach JWT token to the header
+            },
+          }
+        );
+  
+        if (response && response.status === 200) {
           setAlert({ type: 'success', message: 'Password changed successfully' });
-        } else {
-          setAlert({ type: 'error', message: 'Error changing password' });
         }
+
+  
       } catch (error) {
-        setAlert({ type: 'error', message: 'Failed to change password' });
+        if (error.response.status === 400 ) {
+          setAlert({ type: 'error', message: error.response.data.message }); // Get message from response.data
+        }else{
+          setAlert({ type: 'error', message: 'Failed to change password' });
+          console.error("Password change error:", error);
+        }
+
       }
     }
   };
 
   const handleProfileSubmit = async (e) => {
     e.preventDefault();
+    if(profile.fullName.length <=0)
+      setAlert({ type: 'error', message: 'Full Name is required' });
+    else if(profile.phoneNum.length !== 11)
+      setAlert({ type: 'error', message: 'Phone Number is required and must be 11 digits long' });
+    else if(profile.phoneNum.charAt(0) !== '0') 
+        setAlert({ type: 'error', message: 'Phone Number must start with 0' });  
+    
+      
+    
+    const url="http://localhost:3000/api/v1/teacher/post/my-profile/edit-profile-information"
+    const token = "shdjkhajkh"; //localStorage.getItem('jwtToken'); 
     try {
-      const response = await fetch('/api/update-profile', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(profile),
-      });
-      const result = await response.json();
-      if (response.ok) {
-        setAlert({ type: 'success', message: 'Profile updated successfully' });
-      } else {
-        setAlert({ type: 'error', message: result.message || 'Error updating profile' });
+      const response = await axios.post(url, 
+        {
+          profile
+        },
+        {
+          headers: { 'Authorization': `Bearer ${token}` }
+        }
+      );
+        
+        
+      if(response && response.status == 200){
+        setAlert({ type: 'success', message: 'Profile Edited' });
       }
-    } catch (error) {
-      setAlert({ type: 'error', message: 'Failed to update profile' });
+      
+    }
+    catch (error) {
+      if (error.response.status === 400 ) {
+        setAlert({ type: 'error', message: error.response.data.message }); // Get message from response.data
+      }else{
+        setAlert({ type: 'error', message: 'Failed to edit Profile' });
+        console.error("Edit Profile error:", error);
+      }
+
     }
   };
 
@@ -99,7 +167,7 @@ const Settings = () => {
             <label className="block text-sm font-medium text-gray-600">Phone Number</label>
             <input
               type="tel"
-              value={profile.phoneNumber}
+              value={profile.phoneNum}
               onChange={(e) => setProfile({ ...profile, phoneNumber: e.target.value })}
               className="w-full px-4 py-3 mt-2 border border-gray-300 rounded-md"
             />

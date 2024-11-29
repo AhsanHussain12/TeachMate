@@ -1,13 +1,17 @@
 import React, { useEffect, useState } from 'react'
 import GigCard from './subcomponents/GigCard';
 import Fuse from 'fuse.js';
-import GigCard_1 from './subcomponents/GigCard';
+import axios from 'axios';
+import { ClipLoader } from 'react-spinners';
+
+// { gigId: 1, gigTitle: "Math Tutoring for Grade 10", studentArea: "Downtown", AppliedAt: "2024-10-15", gigType: "online", status: 'Pending' }, { gigId: 2, gigTitle: "Science Tutoring for Grade 11", studentArea: "Uptown", AppliedAt: "2024-10-16", gigType: "offline", status: 'Approved' }, { gigId: 3, gigTitle: "English Language Tutoring", studentArea: "Midtown", AppliedAt: "2024-10-17", gigType: "online", status: 'Rejected' }, { gigId: 4, gigTitle: "History Tutoring for Grade 12", studentArea: "Eastside", AppliedAt: "2024-10-18", gigType: "online", status: 'Pending' }, { gigId: 5, gigTitle: "Physics Tutoring for Grade 10", studentArea: "Westside", AppliedAt: "2024-10-19", gigType: "offline", status: 'Approved' }
 
 function AppliedGigs() {
-    
-    const [appliedGigs,setAppliedGigs] = useState([{ gigId: 1, gigTitle: "Math Tutoring for Grade 10", studentArea: "Downtown", AppliedAt: "2024-10-15", gigType: "online", status: 'Pending' }, { gigId: 2, gigTitle: "Science Tutoring for Grade 11", studentArea: "Uptown", AppliedAt: "2024-10-16", gigType: "offline", status: 'Approved' }, { gigId: 3, gigTitle: "English Language Tutoring", studentArea: "Midtown", AppliedAt: "2024-10-17", gigType: "online", status: 'Rejected' }, { gigId: 4, gigTitle: "History Tutoring for Grade 12", studentArea: "Eastside", AppliedAt: "2024-10-18", gigType: "online", status: 'Pending' }, { gigId: 5, gigTitle: "Physics Tutoring for Grade 10", studentArea: "Westside", AppliedAt: "2024-10-19", gigType: "offline", status: 'Approved' }])
+    const [appliedGigs,setAppliedGigs] = useState([])
     const [search, setSearch] = useState("");
     const [displayedGIGs, setDisplayedGIGs] = useState(appliedGigs);
+    const [loading, setLoading] = useState(true);
+
 
     const fuse = new Fuse(appliedGigs, {
         keys: ['gigTitle', 'gigType', 'AppliedAt','studentArea','status'],  // Fields to search
@@ -25,16 +29,33 @@ function AppliedGigs() {
         }, 300);  // Debounce delay
     
         return () => clearTimeout(handler); // Clear timeout on component unmount or new search
-      }, [search]);
+      }, [search,appliedGigs]);
 
 
-// use this part for api call for Appliedgig data
-    // useEffect(() => {
-    //     fetch(// api call to get available gigs)
-    //    .then((res)=>res.json())
-    //    .then((data)=>setGIGs(data))
-    //    .catch((error)=> console.log(error))
-    // },[])
+      useEffect(() => {
+        const fetchData = async () => {
+            const url = 'http://localhost:3000/api/v1/teacher/get/applied-gigs'; // Replace with your API endpoint
+            const token = 'your-jwt-token'; // Replace with your actual JWT token
+        
+            try {
+                const response = await axios.get(url, {
+                    headers: {
+                        Authorization: `Bearer ${token}`, // Adding the JWT token in Authorization header
+                    },
+                });
+                console.log(response.data);
+                setAppliedGigs(response.data);
+            } 
+            catch (error) {
+                console.error('Error fetching data:', error.response?.data || error.message);
+                alert('Error fetching data:', error.response);
+            }
+            finally {
+                setLoading(false); // Hide loading spinner when data is fetched or fetched fails
+            }
+        };
+        fetchData(); 
+    },[])
 
 
     return (
@@ -43,8 +64,12 @@ function AppliedGigs() {
             <h1 className="text-white text-3xl font-semibold border-b-2 border-gray-300 pb-2 mb-6 bg-gradient-to-r from-orange-700 to-orange-400 shadow-lg p-2 rounded">
                GIG BOARD
             </h1>
-
-    
+            {loading ? (
+                <div className="flex items-center justify-center h-full">
+                    <ClipLoader color="#3498db" loading={loading} size={50} />
+                </div>
+            ) : (
+                <>
                 <input
                     type="text"
                     placeholder="Search a GIG..."
@@ -61,6 +86,8 @@ function AppliedGigs() {
                         ))}
                     </ul>
                 </div>
+                </>
+            )}
             </div>
         </section>
     );

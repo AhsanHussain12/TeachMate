@@ -1,12 +1,17 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 function GigCard({ gig, isAppliedGig }) {
+    const formattedDate = new Date(gig.createdAt || gig.appliedAt).toLocaleString("en-GB", {
+        dateStyle: "short",
+    })
+    // console.log(gig)
     return (
         <li 
             key={gig.gigId} 
             className="p-5 bg-white rounded-md shadow-sm transition duration-300 hover:bg-gray-300" // Removed scale
         >
-            <Link to={`/dashboard/gig-details/${gig.gigId}/${isAppliedGig}`}>
+            <Link to={`/dashboard/teacher/gig-details/${gig.gigId}/${isAppliedGig}`}>
                 <div>
                     <div className="justify-between sm:flex">
                         <div className="flex-1">
@@ -14,7 +19,7 @@ function GigCard({ gig, isAppliedGig }) {
                                 {gig.gigTitle}
                             </h3>
                             <p className="text-gray-500 mt-2 pr-2">
-                                {isAppliedGig ? `Applied At: ${gig.AppliedAt}` : gig.details}
+                                {isAppliedGig ? `Applied At: ${formattedDate}` : gig.details}
                             </p>
                         </div>
                         <div className="mt-5 space-y-4 text-sm sm:mt-0 sm:space-y-2">
@@ -25,7 +30,7 @@ function GigCard({ gig, isAppliedGig }) {
                                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                                             <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
                                         </svg>
-                                        {gig.createdAt}
+                                        {formattedDate}
                                     </span>
                                     <span className="flex items-center text-gray-500">
                                         {/* Fee Icon */}
@@ -58,11 +63,11 @@ function GigCard({ gig, isAppliedGig }) {
                     </div>
                     {isAppliedGig && (
                         <button className={`mt-4 py-2 px-4 rounded text-white ${
-                            gig.status === 'Pending' ? 'bg-orange-600' :
-                            gig.status === 'Approved' ? 'bg-green-600' :
-                            gig.status === 'Rejected' ? 'bg-red-600' : 'bg-gray-400'
+                            gig.applicationStatus === 'pending' ? 'bg-orange-600' :
+                            gig.applicationStatus === 'approved' ? 'bg-green-600' :
+                            gig.applicationStatus === 'rejected' ? 'bg-red-600' : 'bg-gray-400'
                         }`}>
-                            {gig.status}
+                            {gig.applicationStatus}
                         </button>
                     )}
                 </div>
