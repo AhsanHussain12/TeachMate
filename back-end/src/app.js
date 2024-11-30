@@ -15,11 +15,13 @@ app.get('/data', Teacher.getTutorProfile)
 
 // import routes
 import teacherRouter from "./Routes/teacher.routes.js";
+import GigRouter from "./Routes/gig.routes.js";
 // import studentRouter from "./Routes/student.routes.js";
 
 
 
 app.use('/api/v1/teacher',teacherRouter)
+app.use('/api/v1/gig',GigRouter)
 // app.use('/api/v1/student',studentRouter)
 
 export default app;

@@ -2,13 +2,13 @@ import db from "../index.js"
 
 const GIG = {
 
-    getGigDetails: async(gigId)=>{
+    getDetails: async(gigId)=>{
         const data = await new Promise((resolve, reject) => {
             db.query(`
                 SELECT 
-                S.fullname,
+                S.fullName,
                 G.gigTitle,
-                G.studentInstitute,
+                G.studentsInstitute,
                 G.studentArea,
                 G.expectedFee,
                 G.createdAt,
@@ -22,8 +22,7 @@ const GIG = {
                 resolve(data)
             })
         })
-        console.log(data[0])
-        return data[0]
+        return data[0]; //return an object instead of an array
     },
 
     applyToGig: async (gigId,tutorId) => {
@@ -33,13 +32,13 @@ const GIG = {
                 INSERT INTO TutorGigApplication (gigId,tutorId,applicationStatus,appliedAt)
                 VALUES(?,?,?,?)
             `,[gigId,tutorId,'pending',formattedDate],(err,data) => {
-                if (err) reject(err)
-                resolve(data)
+                if (err) reject(0) // insertion failed
+                resolve(1) // successfull inserted
             })
         })
         console.log(data)
-        return data.insertId;
+        return data;
     }
 }
 
-export default {GIG};
+export default GIG;

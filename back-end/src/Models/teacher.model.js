@@ -172,6 +172,34 @@ const Teacher = {
         })
         console.log(data)
         return data;
+    },
+
+    getTeacherName: async(tutor_id)=>{
+        const data = await new Promise((resolve, reject)=>{
+            db.query(`
+                SELECT fullName
+                FROM Tutor
+                WHERE tutorId=?;`,[tutor_id],(err,data)=>{
+                if(err) reject(err)
+                else resolve(data)
+            })
+        })
+        console.log(data)
+        return data[0].fullName;
+    },
+
+    editProfile: async(tutor_id,fullName,phoneNum) => {
+        const data = await new Promise((resolve, reject)=>{
+            db.query(`
+                UPDATE Tutor
+                SET fullName=?, phoneNum=?
+                WHERE tutorId=?;`,[fullName, phoneNum, tutor_id],(err)=>{
+                if(err) reject(0)
+                else resolve(1)
+            })
+        })
+        console.log(data)
+        return data;
     }
 
 }
