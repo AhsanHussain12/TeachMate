@@ -1,69 +1,117 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-
+import FailedAlert from '../components/subcomponents/FailedAlert';
+import SuccessAlert from '../components/subcomponents/SuccessAlert';  
+import axios from 'axios';
+import { ClipLoader } from 'react-spinners';
 function DisplayGig () {
     const{gigId,isApplied}=useParams()
+    const [loadingBtn,setLoadingBtn] = useState(false)
+    const [alert, setAlert] = useState({ type: "", message: "" });
+    const [gig,setGig]=useState({})
+    // const gig = {
+    //     fullName: "John Doe",
+    //     gigTitle: "Mathematics Tutoring",
+    //     studentsInstitute: "ABC University",
+    //     studentArea: "Karachi",
+    //     expectedFee: "$50/hour",
+    //     createdAt: "2024-10-27",
+    //     details: "Looking for a tutor to help with calculus and algebra.",
+    //     gigType: "Tutoring"
+    // };
 
-    // const [gig,setGig]=useState({})
-    const gig = {
-        studentName: "John Doe",
-        gigTitle: "Mathematics Tutoring",
-        studentsInstitute: "ABC University",
-        studentArea: "Karachi",
-        expectedFee: "$50/hour",
-        createdAt: "2024-10-27",
-        details: "Looking for a tutor to help with calculus and algebra.",
-        gigType: "Tutoring"
-    };
+// Timeout logic for alert removal
+  useEffect(() => {
+    if (alert.type) {
+      const timeout = setTimeout(() => {
+        setAlert({ type: '', message: '' });
+      }, 2000); // Alert will disappear after 5 seconds
+
+      return () => clearTimeout(timeout); // Cleanup timeout on component unmount or alert change
+    }
+  }, [alert]);
 
 // use this part for api call for student data
-  // useEffect(()=>{
-  //   fetch()
-  //   .then((res)=>res.json())
-  //   .then((data)=>setGig(data))
-  //   .catch((error)=> console.log(error))
-  // },[])
-
-  const handleSubmit = () => {
-    const teacherId = Number(localStorage.getItem('teacherId')) || null;
-    const payload = {
-        tutorId: teacherId,
-        ADId: gigId,
-        Date: new Date(),
-        applicationStatus: 'pending'
-    };
-
-    if (teacherId) {
-        fetch('YOUR_API_ENDPOINT_HERE', {
-            method: 'POST', // or 'PUT' based on your API
+    useEffect(()=>{
+        const fetchData = async ()=>{
+        const url = `http://localhost:3000/api/v1/gig/get-details/${gigId}`; // Replace with your API endpoint
+        const token = 'your-jwt-token'; // Replace with your actual JWT token
+        try {
+        const response = await axios.get(url,{
             headers: {
-                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
             },
-            body: JSON.stringify(payload),
         })
-        .then((res) => {
-            if (!res.ok) {
-                throw new Error('Network response was not ok');
+        console.log(response.data)
+        setGig(response.data) 
+        } 
+        catch (error) {
+            console.error('Error fetching data:', error.response?.data || error.message);
+            setAlert({ type: 'error', message: 'Error fetching data' });
+        }
+
+        }
+        fetchData()
+    },[])
+
+    const handleSubmit = async () => {
+        setLoadingBtn(true);
+        const token = 'your-jwt-token'; // Replace with your actual JWT token
+        try {
+          const url = `http://localhost:3000/api/v1/teacher/post/apply-to-gig/${gigId}`;
+          const payload = {
+            tutorId: 2,
+          };
+      
+          const response = await axios.post(url, payload, {
+            headers: {
+              Authorization: `Bearer ${token}`, // Adding the JWT token in Authorization header
+            },
+          });
+      
+          console.log(response);
+      
+          if (response && response.status === 200) {
+            setAlert({ type: 'success', message: response.data.message });
+          } else {
+            setAlert({ type: 'error', message: 'Unexpected response from server' });
+          }
+        } catch (error) {
+          // Check if error.response exists before accessing error.response.status
+          if (error.response) {
+            if (error.response.status === 400) {
+              setAlert({ type: 'error', message: error.response.data.message }); // Message from server
+            } else {
+              setAlert({ type: 'error', message: `Error: ${error.response.status} ${error.response.message}` });
             }
-            return res.json();
-        })
-        .then((data) => {
-            console.log('Success:', data);
-            // Handle successful response here, e.g., redirect or show a message
-        })
-        .catch((error) => {
-            console.error('Error:', error);
-            // Handle error here, e.g., show an error message to the user
-        });
-    } else {
-        console.error('No teacher ID found in localStorage');
-        // Handle the case where teacherId is null (not logged in)
-    }
-};
+          } 
+          else if (error.request) {
+            // Handle the case where no response was received (e.g., network error)
+            setAlert({ type: 'error', message: 'Network Error. Please try again later.' });
+          } 
+          else {
+            // Catch any other errors, like configuration issues
+            setAlert({ type: 'error', message: `Error: ${error.message}` });
+          }
+          console.error("Apply to Gig error:", error);
+        } finally {
+          setLoadingBtn(false); // Ensure loading indicator is stopped regardless of success or error
+        }
+      };
 
 
     return (
         <section className="mt-10 flex h-screen w-full">
+            {/* Render Alert with Timeout */}
+            {alert.type && (
+                <div className="fixed top-0 left-1/2 transform -translate-x-1/2 z-50">
+                {alert.type === 'success' ? (
+                    <SuccessAlert message={alert.message} />
+                ) : (
+                    <FailedAlert message={alert.message} />
+                )}
+                </div>
+            )}
             <div className="bg-white rounded-2xl shadow-lg p-5 md:p-6 flex flex-col w-full max-w-full h-full">
                 <h1 className="text-white text-3xl font-semibold border-b-2 border-gray-300 pb-2 mb-5 bg-gradient-to-r from-orange-700 to-orange-400 shadow-lg p-2 rounded">
                     GIG DETAILS  {isApplied}
@@ -74,7 +122,7 @@ function DisplayGig () {
                         Student Name:
                         <input
                             type="text"
-                            value={gig.studentName}
+                            value={gig.fullName}
                             readOnly
                             className="border border-gray-200 rounded-lg p-2 bg-gray-100 text-gray-600"
                         />
@@ -149,10 +197,26 @@ function DisplayGig () {
                         />
                     </label>
                 </div>
-                {isApplied==='false' ? <button 
-                className="mt-5 py-2 px-4 bg-orange-700 text-white font-semibold rounded-lg shadow-md hover:bg-orange-600 transition duration-300"
-                onClick={handleSubmit}
-                >Apply for a Demo</button>:null }
+                {isApplied === 'false' ? (
+                <div className="mt-5 flex justify-center">
+                    <button
+                    className={`py-2 px-6 bg-orange-700 text-white font-semibold rounded-lg shadow-md hover:bg-orange-600 transition duration-300 ${
+                        loadingBtn ? 'pointer-events-none opacity-50' : ''
+                    }`}
+                    onClick={handleSubmit}
+                    disabled={loadingBtn}
+                    >
+                    {loadingBtn ? (
+                        <div className="flex items-center justify-center">
+                        <ClipLoader color="#3498db" loading={loadingBtn} size={24} />
+                        </div>
+                    ) : (
+                        'Apply for a Demo'
+                    )}
+                    </button>
+                </div>
+                ) : null}
+
             </div>
         </section>
     );

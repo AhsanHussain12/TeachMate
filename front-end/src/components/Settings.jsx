@@ -99,14 +99,19 @@ const Settings = () => {
 
   const handleProfileSubmit = async (e) => {
     e.preventDefault();
-    if(profile.fullName.length <=0)
+
+    if(profile.fullName.length <=0){
       setAlert({ type: 'error', message: 'Full Name is required' });
-    else if(profile.phoneNum.length !== 11)
+      return;
+    }  
+    else if(profile.phoneNum.length != 11){
       setAlert({ type: 'error', message: 'Phone Number is required and must be 11 digits long' });
-    else if(profile.phoneNum.charAt(0) !== '0') 
-        setAlert({ type: 'error', message: 'Phone Number must start with 0' });  
-    
-      
+      return;
+    } 
+    else if(profile.phoneNum.charAt(0) !== '0') {
+      setAlert({ type: 'error', message: 'Phone Number must start with a "0" ' });
+      return;
+    }
     
     const url="http://localhost:3000/api/v1/teacher/post/my-profile/edit-profile-information"
     const token = "shdjkhajkh"; //localStorage.getItem('jwtToken'); 
@@ -130,7 +135,7 @@ const Settings = () => {
       if (error.response.status === 400 ) {
         setAlert({ type: 'error', message: error.response.data.message }); // Get message from response.data
       }else{
-        setAlert({ type: 'error', message: 'Failed to edit Profile' });
+        setAlert({ type: 'error', message: error.response.data.message  });
         console.error("Edit Profile error:", error);
       }
 
@@ -166,9 +171,9 @@ const Settings = () => {
           <div>
             <label className="block text-sm font-medium text-gray-600">Phone Number</label>
             <input
-              type="tel"
+              type="number"
               value={profile.phoneNum}
-              onChange={(e) => setProfile({ ...profile, phoneNumber: e.target.value })}
+              onChange={(e) => setProfile({ ...profile, phoneNum: e.target.value })}
               className="w-full px-4 py-3 mt-2 border border-gray-300 rounded-md"
             />
           </div>

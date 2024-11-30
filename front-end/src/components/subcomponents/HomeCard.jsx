@@ -1,22 +1,42 @@
 import React, { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHouse, faLaptop, faUserFriends } from '@fortawesome/free-solid-svg-icons';
-import { API_NINJA_KEY } from '../../utils/KEYS';
 
 const HomeCard = () => {
-    const [user,setUser] =useState("Example")
+    const [user,setUser] =useState("User")
     const [quote, setQuote] = useState({})
-    // useEffect(() =>{
-    //     fetch('https://api.api-ninjas.com/v1/quotes?category=education', {
-    //         method: 'GET',
-    //         headers: {
-    //           'X-Api-Key': API_NINJA_KEY, // Replace 'apiKey' with your actual API key
-    //         },
-    //     })
-    //     .then((res) => res.ok ? res.json(): Promise.reject('Failed to fetch quote'))
-    //     .then(data => setQuote(data[0]))
-    //     .catch(error => console.error('Error fetching the quote:', error))
-    // },[])
+    const [dashboardStats, setdashboardStats] = useState({ homeCount: { count: 0 },onlineCount: { count: 0 },allstudentCount: { count: 0 } })
+
+    useEffect(() =>{
+
+        // fetch User Name and dashboard stats for hometutionCount, OnlinetutionCount and TotalCount
+
+        const token = "asdasda" // localStorage.getItem('jwtToken');  Replace with actual JWT token
+
+        fetch(`http://localhost:3000/api/v1/teacher/get/my-student-counts`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`, // Adding the JWT token in Authorization header
+            },
+        })
+       .then((res) => res.ok ? res.json() : Promise.reject('Failed to fetch user data'))
+       .then(data => {console.log(data); setdashboardStats(data)})
+       .catch(error => console.error('Error fetching user data:', error))
+       
+       // retrieve userName from localStorage
+       const storedUserName = localStorage.getItem('userName')
+        if (storedUserName) {
+            setUser(storedUserName);  // Set the state with the stored value
+        }
+        // retrieve quote from localStorage as string and the parses it into json object
+        const storedQuote = localStorage.getItem('quote')
+        if (storedQuote) {
+            // console.log(JSON.parse(storedQuote));
+            setQuote(JSON.parse(storedQuote));  // Set the state with the stored value
+        }
+
+    },[])
+
 
   return (
     <>
@@ -30,17 +50,17 @@ const HomeCard = () => {
                 <div className="text-center">
                 <FontAwesomeIcon icon={faHouse} className="w-10 h-10 mb-2 text-white" />
                 <p className="opacity-75">Home Tuitions</p>
-                <p className="text-3xl font-bold">0</p>
+                <p className="text-3xl font-bold">{dashboardStats.homeCount.count}</p>
                 </div>
                 <div className="text-center">
                 <FontAwesomeIcon icon={faLaptop} className="w-10 h-10 mb-2 text-white" />
                 <p className="opacity-75">Online Classes</p>
-                <p className="text-3xl font-bold">0</p>
+                <p className="text-3xl font-bold">{dashboardStats.onlineCount.count}</p>
                 </div>
                 <div className="text-center">
                 <FontAwesomeIcon icon={faUserFriends} className="w-10 h-10 mb-2 text-white" />
                 <p className="opacity-75">Total Students</p>
-                <p className="text-3xl font-bold">0</p>
+                <p className="text-3xl font-bold">{dashboardStats.allstudentCount.count}</p>
                 </div>
             </div>
         </div>
