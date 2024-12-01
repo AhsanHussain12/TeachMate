@@ -25,7 +25,7 @@ const Teacher = {
         return data;
     },
 
-    getTutorAppliedGigs: async(tutor_id)=>{
+    getTutorAppliedGigs: async (tutor_id)=>{
         const data = await new Promise((resolve, reject)=>{
             db.query(`
                 SELECT 
@@ -50,7 +50,7 @@ const Teacher = {
         return data;
     },
 
-    getTutorProfile: async(tutor_id)=>{
+    getTutorProfile: async (tutor_id)=>{
         const data = await new Promise((resolve, reject)=>{
             db.query(`
                     SELECT 
@@ -59,7 +59,7 @@ const Teacher = {
                     email,
                     gender
                     FROM Tutor 
-                    WHERE tutorId=2;`,[tutor_id],(err,data)=>{
+                    WHERE tutorId=?;`,[tutor_id],(err,data)=>{
                 if(err) reject(err)
                 else resolve(data)
             })
@@ -68,7 +68,7 @@ const Teacher = {
         return data;
     },
 
-    getHomeTutionsCount: async(tutor_id)=>{
+    getHomeTutionsCount: async (tutor_id)=>{
         const data = await new Promise((resolve, reject)=>{
             db.query(`
                 SELECT 
@@ -84,7 +84,7 @@ const Teacher = {
         return data[0];
     },
 
-    getOnlineTutionsCount: async(tutor_id)=>{
+    getOnlineTutionsCount: async (tutor_id)=>{
         const data = await new Promise((resolve, reject)=>{
             db.query(`
                 SELECT 
@@ -100,14 +100,14 @@ const Teacher = {
         return data[0];
     },
 
-    getAllStudentCount: async(tutor_id)=>{
+    getAllStudentCount: async (tutor_id)=>{
         const data = await new Promise((resolve, reject)=>{
             db.query(`
                 SELECT 
                 COUNT(DISTINCT STA.studentId) AS count
                 FROM studenttutorassignment STA
                 inner join Gig G on G.gigId= STA.gigId
-                where tutorId=STA.tutorId ;`,[tutor_id],(err,data)=>{
+                where tutorId=? ;`,[tutor_id],(err,data)=>{
                 if(err) reject(err)
                 else resolve(data)
             })
@@ -159,7 +159,7 @@ const Teacher = {
         return data[0].password;
     },
 
-    storeTeacherPassword: async(tutor_id,newPassword)=>{
+    storeTeacherPassword: async (tutor_id,newPassword)=>{
         const hashedPassword = generatehashPassword(newPassword)
         const data = await new Promise((resolve, reject)=>{
             db.query(`
@@ -174,7 +174,7 @@ const Teacher = {
         return data;
     },
 
-    getTeacherName: async(tutor_id)=>{
+    getTeacherName: async (tutor_id)=>{
         const data = await new Promise((resolve, reject)=>{
             db.query(`
                 SELECT fullName
@@ -188,7 +188,7 @@ const Teacher = {
         return data[0].fullName;
     },
 
-    editProfile: async(tutor_id,fullName,phoneNum) => {
+    editProfile: async (tutor_id,fullName,phoneNum) => {
         const data = await new Promise((resolve, reject)=>{
             db.query(`
                 UPDATE Tutor
@@ -200,7 +200,34 @@ const Teacher = {
         })
         console.log(data)
         return data;
-    }
+    },
+
+    signUp: async (inputData) => {
+        const {fullName,email,password,gender,phoneNum} = inputData
+        const hashedPassword = generatehashPassword(password);
+        const currentDate = new Date().toISOString().split('T')[0];
+        console.log(fullName, email, hashedPassword, gender, phoneNum,currentDate);
+        const data = await new Promise((resolve, reject) => {
+            db.query(`
+                INSERT INTO Tutor (fullName, email, password, gender, phoneNum, regDate)
+                VALUES (?,?,?,?,?,?)`,[fullName, email, hashedPassword, gender, phoneNum,currentDate],(err)=>{
+                if(err) reject(0)
+                else resolve(1)
+            })
+        })
+        return data;
+    },
+
+    getTeacherByEmail: async (email) => {
+        const data = await new Promise((resolve, reject) => {
+            db.query(`SELECT email,tutorId from tutor where email= ?`,[email],(err,data)=>{
+                if(err) reject(err)
+                else resolve(data)
+            })
+        })
+        console.log(data)
+        return data;
+    },
 
 }
 

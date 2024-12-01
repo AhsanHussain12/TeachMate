@@ -16,13 +16,14 @@ import HomeCard from './components/subcomponents/HomeCard.jsx'
 import Settings from './components/Settings.jsx'
 import StudentDashboard from './components/StudentDashboard.jsx'
 import TeacherList from './components/TeacherList.jsx'
+import ProtectedRoute from './components/ProtectedRoute.jsx'
 //import Login from './components/LoginModal.jsx'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
     <Route path='/' element={<HomeLayout />} >  // parent route
-      <Route path='' element={<Home />} />
+      <Route index element={<Home />} />
       <Route path='about' element={<About />} />
       <Route path='contact-us' element={<Contact />} />
     </Route>
@@ -31,7 +32,11 @@ const router = createBrowserRouter(
       <Route index element={<SignUp />} />
     </Route>
 
-    <Route path='/dashboard/teacher' element={<TeacherDashboard/>}>
+    <Route path='/dashboard/teacher' element={
+        <ProtectedRoute>
+          <TeacherDashboard />
+        </ProtectedRoute>
+    }>
       <Route path='' element={<HomeCard />} />
       <Route path='students' element={<StudentList/>} />
       <Route path='find-gigs' element={<FindGigs/>} />

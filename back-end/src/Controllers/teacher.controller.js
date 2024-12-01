@@ -5,9 +5,10 @@ import { comparePasswords } from "../Utils/pass_Hash.js";
 export default class TeacherController {
 
     getAllstudents = async (req, res) =>{
-        // req.userId from middleware using JWT token
+        const userId = req.userId
+        console.log("userId: " + userId)
         try {
-            const students = await Teacher.getTutorstudents(2);
+            const students = await Teacher.getTutorstudents(userId);
             res.status(200).json(students);
         } catch (error) {
             res.status(500).json({ message: 'Server error' });
@@ -15,9 +16,10 @@ export default class TeacherController {
     };
 
     getAllappliedGigs = async (req, res) => {
-        // req.userId from middleware using JWT token
+        const userId = req.userId 
+        console.log("userId: " + userId)
         try {
-            const gigs = await Teacher.getTutorAppliedGigs(2);
+            const gigs = await Teacher.getTutorAppliedGigs(userId);
             res.status(200).json(gigs);
         } catch (error) {
             res.status(500).json({ message: 'Server error' });
@@ -25,9 +27,10 @@ export default class TeacherController {
     };
 
     getProfile = async (req, res) => {
-        // req.userId from middleware using JWT token
+        const userId = req.userId
+        console.log("userId: " + userId)
         try {
-            const teacher = await Teacher.getTutorProfile(2);
+            const teacher = await Teacher.getTutorProfile(userId);
             res.status(200).json(teacher);
         } catch (error) {
             res.status(500).json({ message: 'Server error' });
@@ -35,11 +38,12 @@ export default class TeacherController {
     };
 
     getStudentCounts = async (req,res)=>{
-        // req.userId from middleware using JWT token
+        const userId = req.userId
+        console.log("userId: " + userId)
         try {
-            const homeCount = await Teacher.getHomeTutionsCount();
-            const onlineCount = await Teacher.getOnlineTutionsCount();
-            const allstudentCount= await Teacher.getAllStudentCount();
+            const homeCount = await Teacher.getHomeTutionsCount(userId);
+            const onlineCount = await Teacher.getOnlineTutionsCount(userId);
+            const allstudentCount= await Teacher.getAllStudentCount(userId);
             const dashStats = {
                 homeCount,
                 onlineCount,
@@ -53,8 +57,10 @@ export default class TeacherController {
     };
 
     getGigs = async (req,res)=>{
+        const userId = req.userId
+        console.log("userId: " + userId) 
         try {
-            const gigs = await Teacher.getAllGigs(2);
+            const gigs = await Teacher.getAllGigs(userId);
             res.status(200).json(gigs);
         } catch (error) {
             res.status(500).json({ message: 'Server error' });
@@ -62,10 +68,11 @@ export default class TeacherController {
     };
 
     changePassword = async (req,res) => {
-        // req.userId from middleware using JWT token
+        const userId = req.userId  
+        console.log("userId: " + userId)
         try {
             const {oldPassword,newPassword } = req.body
-            const oldHashpassword = await Teacher.getTeacherPassword(2)
+            const oldHashpassword = await Teacher.getTeacherPassword(userId)
 
             if(comparePasswords(oldPassword,oldHashpassword)){
                 if (oldPassword === newPassword) {
@@ -84,11 +91,14 @@ export default class TeacherController {
     // this controller takse gigId from url and tutorId from body 
     // upon success->inserId=1  upon failue->insert id=0 send reponse acc
     applyToGig = async (req,res) => {
+        // req.userId from middleware using JWT token
         const {gigId} = req.params
+        const userId = req.userId
         try {
-            const { tutorId } = req.body // can get tutorid also from req.body
+            
             console.log(gigId);
-            const insertId = await GIG.applyToGig(gigId,tutorId)
+            console.log("userId: " + userId)
+            const insertId = await GIG.applyToGig(gigId,userId)
             console.log("insertId: ",insertId)
             if(insertId == 1)
             res.status(200).json({ message: 'Applied to GIG successfully' })
@@ -101,8 +111,10 @@ export default class TeacherController {
 
     getName = async (req, res) => {
         // req.userId from middleware using JWT token
+        const userId = req.userId
+        console.log("userId: " + userId)
         try {
-            const name = await Teacher.getTeacherName(4);
+            const name = await Teacher.getTeacherName(userId);
             console.log(name)
             res.status(200).json( name );
         } catch (error) {
@@ -112,6 +124,8 @@ export default class TeacherController {
 
     editProfileInformation = async (req, res) => {
         // req.userId from middleware using JWT token
+        const userId = req.userId  // get userId from middleware
+        console.log("userId: " + userId)
         try {
             const { fullName,phoneNum } = req.body.profile;
             console.log(fullName, phoneNum);
@@ -121,7 +135,7 @@ export default class TeacherController {
                 return res.status(400).json({ message: 'Required Data Fields might be missing ' });
             }
 
-            const statusFlag = await Teacher.editProfile(2,fullName,phoneNum)
+            const statusFlag = await Teacher.editProfile(userId,fullName,phoneNum)
 
             console.log("Status: ",statusFlag)
 
@@ -130,6 +144,31 @@ export default class TeacherController {
             
         } catch (error) {
             res.status(500).json({ message: 'Not able to Edit Profile try Later ' })
+        }
+    };
+
+    teacherSignup = async(req,res) => {
+        try {
+            // after signup redirects back to login no need to pass token for dashboard access
+            if (Object.keys(req.body).length === 0){
+            return res.status(400).json({ message: 'Required Data Fields might be missing ' });
+            }
+
+            const checkUserExistencs = await Teacher.getTeacherByEmail(req.body.email); 
+            if(checkUserExistencs.length > 0){
+                return res.status(409).json({ message: 'Email already exist' });
+            }
+
+            const statusFlag = await Teacher.signUp(req.body)
+            if(statusFlag == 1){
+                return res.status(200).json({type:"teacher", message: 'SignUp Successfull' })
+            }else {
+                return res.status(400).json({ message: 'SignUp Failed' });
+            }
+           
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: 'SignUp Failed' });
         }
     };
 }

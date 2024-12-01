@@ -1,5 +1,5 @@
 CREATE TABLE Student (
-    studentId INT PRIMARY KEY,
+    studentId INT PRIMARY KEY AUTO_INCREMENT,
     fullName VARCHAR(100) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
@@ -8,18 +8,17 @@ CREATE TABLE Student (
     regDate DATE NOT NULL,
     educationalStatus VARCHAR(20),  -- Alvl/Olvl/inter/Matric/None
     currentClass VARCHAR(20) NOT NULL, -- class(KG--A2)/None
-    bio TEXT
+    
 );
 
 CREATE TABLE Tutor (
-    tutorId INT PRIMARY KEY,
+    tutorId INT PRIMARY KEY AUTO_INCREMENT,
     fullName VARCHAR(100) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     gender VARCHAR(10) NOT NULL,
     phoneNum VARCHAR(15) NOT NULL,
     regDate DATE NOT NULL,
-    professionalSummary TEXT
 );
 
 CREATE TABLE Gig (
@@ -32,7 +31,7 @@ CREATE TABLE Gig (
     createdAt DATE NOT NULL,
     status VARCHAR(20) NOT NULL,  -- open or closed
     details TEXT,
-    gigType VARCHAR(20) NOT NULL, 
+    gigType VARCHAR(20) NOT NULL,  -- home or online
     FOREIGN KEY (studentId) REFERENCES Student(studentId) ON DELETE CASCADE
 );
 
@@ -58,7 +57,7 @@ CREATE TABLE StudentTutorAssignment (
 );
 
 CREATE TABLE Admin (
-    adminId INT PRIMARY KEY,
+    adminId INT PRIMARY KEY AUTO_INCREMENT,
     fullName VARCHAR(100) NOT NULL,  -- Added length for VARCHAR
     email VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,

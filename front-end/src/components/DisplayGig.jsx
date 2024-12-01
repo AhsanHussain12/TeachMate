@@ -1,25 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import FailedAlert from '../components/subcomponents/FailedAlert';
 import SuccessAlert from '../components/subcomponents/SuccessAlert';  
 import axios from 'axios';
 import { ClipLoader } from 'react-spinners';
 function DisplayGig () {
-    const{gigId,isApplied}=useParams()
+    const {gigId,isApplied} = useParams()
     const [loadingBtn,setLoadingBtn] = useState(false)
     const [alert, setAlert] = useState({ type: "", message: "" });
     const [gig,setGig]=useState({})
-    // const gig = {
-    //     fullName: "John Doe",
-    //     gigTitle: "Mathematics Tutoring",
-    //     studentsInstitute: "ABC University",
-    //     studentArea: "Karachi",
-    //     expectedFee: "$50/hour",
-    //     createdAt: "2024-10-27",
-    //     details: "Looking for a tutor to help with calculus and algebra.",
-    //     gigType: "Tutoring"
-    // };
-
+    const navigate = useNavigate()
 // Timeout logic for alert removal
   useEffect(() => {
     if (alert.type) {
@@ -56,16 +46,14 @@ function DisplayGig () {
 
     const handleSubmit = async () => {
         setLoadingBtn(true);
-        const token = 'your-jwt-token'; // Replace with your actual JWT token
+         // Replace with your actual JWT token
         try {
           const url = `http://localhost:3000/api/v1/teacher/post/apply-to-gig/${gigId}`;
-          const payload = {
-            tutorId: 2,
-          };
-      
-          const response = await axios.post(url, payload, {
+          const token = localStorage.getItem('jwtToken');
+          console.log(token);
+          const response = await axios.post(url,{},{
             headers: {
-              Authorization: `Bearer ${token}`, // Adding the JWT token in Authorization header
+                authorization: `Bearer ${token}`, // Adding the JWT token in Authorization header
             },
           });
       
@@ -73,6 +61,9 @@ function DisplayGig () {
       
           if (response && response.status === 200) {
             setAlert({ type: 'success', message: response.data.message });
+            setTimeout(() =>{
+                navigate('/dashboard/teacher/find-gigs')
+            },[1000])
           } else {
             setAlert({ type: 'error', message: 'Unexpected response from server' });
           }
@@ -114,7 +105,7 @@ function DisplayGig () {
             )}
             <div className="bg-white rounded-2xl shadow-lg p-5 md:p-6 flex flex-col w-full max-w-full h-full">
                 <h1 className="text-white text-3xl font-semibold border-b-2 border-gray-300 pb-2 mb-5 bg-gradient-to-r from-orange-700 to-orange-400 shadow-lg p-2 rounded">
-                    GIG DETAILS  {isApplied}
+                    GIG DETAILS 
                 </h1>
                 
                 <div className="flex flex-col space-y-3">

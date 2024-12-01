@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import FailedAlert from './subcomponents/FailedAlert';
 import SuccessAlert from './subcomponents/SuccessAlert';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 // {
 //   fullName: 'John Doe',
@@ -13,14 +14,14 @@ import axios from 'axios';
 const Settings = () => {
   const [activeSection, setActiveSection] = useState('profile-info');
   const [alert, setAlert] = useState({ type: "", message: "" });
-
   const [profile, setProfile] = useState({});
+  const navigate = useNavigate()
 
   // fetch api data for profile information display (complete)
   useEffect(()=>{
     const fetchData = async ()=>{
       const url = 'http://localhost:3000/api/v1/teacher/get/my-profile'; // Replace with your API endpoint
-      const token = 'your-jwt-token'; // Replace with your actual JWT token
+      const token = localStorage.getItem('jwtToken');
       try {
        const response = await axios.get(url,{
           headers: {
@@ -66,7 +67,7 @@ const Settings = () => {
       try {
         
         const url="http://localhost:3000/api/v1/teacher/post/my-profile/change-password"
-        const token = "shdjkhajkh"; //localStorage.getItem('jwtToken'); 
+        const token = localStorage.getItem('jwtToken'); 
 
         const response = await axios.post(url,
           {
@@ -114,7 +115,7 @@ const Settings = () => {
     }
     
     const url="http://localhost:3000/api/v1/teacher/post/my-profile/edit-profile-information"
-    const token = "shdjkhajkh"; //localStorage.getItem('jwtToken'); 
+    const token = localStorage.getItem('jwtToken'); 
     try {
       const response = await axios.post(url, 
         {
@@ -128,6 +129,9 @@ const Settings = () => {
         
       if(response && response.status == 200){
         setAlert({ type: 'success', message: 'Profile Edited' });
+        setTimeout(() => {
+          navigate(-1) // Navigate to dashboard after successful profile edit
+        },[1000])
       }
       
     }
@@ -188,6 +192,7 @@ const Settings = () => {
             <div className="w-full px-4 py-3 mt-2 border border-gray-300 rounded-md bg-gray-100 text-gray-600">{profile.gender}</div>
           </div>
         </div>
+        
         <button
           type="submit"
           className="px-6 py-3 text-white bg-green-600 rounded-md hover:bg-green-700 mt-4"

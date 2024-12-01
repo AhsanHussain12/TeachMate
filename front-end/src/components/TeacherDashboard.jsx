@@ -7,9 +7,9 @@ import { API_NINJA_KEY } from '../utils/KEYS';
 
 function TeacherDashboard() {
   const [userName, setUsername] = useState(null)
-  const token = "ererer" // get from local storage
+  const token = localStorage.getItem('jwtToken'); // Get the token from local storage
   useEffect(() => {
-
+    
     // gets the quote from api and parses and store in local storage to avoid repetative api calls
     fetch('https://api.api-ninjas.com/v1/quotes?category=education', {
       method: 'GET',
@@ -40,11 +40,14 @@ function TeacherDashboard() {
   },[])
 
   return (
-        <div className="flex">
+    <div className="flex min-h-screen bg-gray-50">
         <Sidebar role={"teacher"} />
-        <main className="flex-1 p-4 bg-gray-50">
+        <main className="flex-1 p-6 bg-white rounded-lg shadow-lg mx-4 my-6">
           <DashboardHeader user={userName} />
+          <div className="mt-6">
           <Outlet/>
+          </div>
+        
         </main>
       </div>
     )

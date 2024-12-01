@@ -11,7 +11,7 @@ const HomeCard = () => {
 
         // fetch User Name and dashboard stats for hometutionCount, OnlinetutionCount and TotalCount
 
-        const token = "asdasda" // localStorage.getItem('jwtToken');  Replace with actual JWT token
+        const token = localStorage.getItem('jwtToken');
 
         fetch(`http://localhost:3000/api/v1/teacher/get/my-student-counts`, {
             method: 'GET',

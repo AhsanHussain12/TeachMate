@@ -1,48 +1,49 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 function LoginModal({ isOpen, onClose }) {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loginFailed, setLoginFailed] = useState(false);
-    const [payload,setpayload] = useState({})
+    const [errorMsg, setErrorMsg] = useState("")
     const navigate = useNavigate();  // used to navigate between pages using react-router-dom
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setpayload({ email: email, password: password });
+        const payload = { email: email, password: password }
         try {
-            const response = await fetch('Target URL', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload),
-            });
+            const response = await axios.post(`http://localhost:3000/api/v1/login/validate`,payload)
 
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
+            if (response && response.status == 200) {
 
-            const data = await response.json(); // Assume {status:true/false, usertype: 'student'/'teacher'/'admin userid:id'}
+                localStorage.setItem('jwtToken', response.data.token); // Store JWT token in local storage
+                onClose();  // Close the modal after successful login
+                
+                if(response.data.type) 
+                navigate(`/dashboard/${response.data.type}`)
             
-            if (data.status) {
-                if (data.usertype === 'student') {
-                    localStorage.setItem('studentId', data.userId);
-                    navigate(`/student-dashboard/${data.userid}`); // Redirect to student dashboard
-                } else if (data.usertype === 'teacher') {
-                    localStorage.setItem('teacherId', data.userId);
-                    navigate(`/teacher-dashboard/${data.userid}`); // Redirect to teacher dashboard
-                } else {
-                    localStorage.setItem('adminId', data.userId);
-                    navigate(`/admin-dashboard/${data.userid}`); // Redirect to admin dashboard
+            }
+        }
+        catch (error) {
+            if (error.response) {
+                const { status } = error.response;
+                if (status === 401) {
+                    setLoginFailed(true);
+                    setErrorMsg("Invalid Password!");
+                } else if (status === 404) {
+                    setLoginFailed(true);
+                    setErrorMsg("User Not Found Try Signing UP!");
                 }
             } else {
                 setLoginFailed(true);
-                setTimeout(() => {
-                    setLoginFailed(false);
-                }, 2000);  // Wait 2 seconds before hiding the error message
+                setErrorMsg("Server Error. Try again later!");
             }
-        } catch (error) {
-            console.error('Error during login:', error);
+        
+            setTimeout(() => {
+                setLoginFailed(false);
+                setErrorMsg("");
+            }, 2000);
         }
     };
 
@@ -81,6 +82,7 @@ function LoginModal({ isOpen, onClose }) {
                                     placeholder="Enter your password"
                                     required
                                 />
+                                <div></div>
                             </div>
                             <div>
                                 <button
@@ -92,7 +94,7 @@ function LoginModal({ isOpen, onClose }) {
                             </div>
                             {loginFailed && (
                                 <div className="mt-4 p-4 text-red-700 bg-red-100 border border-red-300 rounded-lg text-center">
-                                    Login failed. Please try again.
+                                    {errorMsg}
                                 </div>
                             )}
                             <p className="text-sm text-gray-500 mt-4 text-center">

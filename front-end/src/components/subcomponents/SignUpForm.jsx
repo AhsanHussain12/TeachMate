@@ -1,7 +1,12 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import FailedAlert from './FailedAlert';
+import SuccessAlert from './SuccessAlert';
+
 
 const curriculumOptions = [
     'PRIMARY CLASSES ',
@@ -25,13 +30,16 @@ const curriculumOptions = [
 ];
 
 const SignupForm = ({role}) => {
+
     const { register, handleSubmit, watch, formState: { errors } } = useForm();
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-    const [payload,setPayload] = useState({});
+    const [alert, setAlert] = useState({ type: "", message: "" });
 
     const togglePasswordVisibility = () => setShowPassword(!showPassword);
     const toggleConfirmPasswordVisibility = () => setShowConfirmPassword(!showConfirmPassword);
+    const navigate = useNavigate()
+
 
     const formFieldClasses =()=>{
         return (
@@ -54,35 +62,56 @@ const SignupForm = ({role}) => {
         
         )
     }
+    
+    useEffect(() => {
+        if (alert.type) {
+          const timeout = setTimeout(() => {
+            setAlert({ type: '', message: '' });
+          }, 2000); // Alert will disappear after 5 seconds
+    
+          return () => clearTimeout(timeout); // Cleanup timeout on component unmount or alert change
+        }
+    }, [alert]);
 
     const onSubmit = async (data) => {
-            setPayload({...data, role: role});
-            console.log(data);
+            const payload = {...data, type: role}
+            console.log(payload);
+            let url
             try {
-                const response = await fetch('https://your-api-url.com/endpoint', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(payload),
-                });
-        
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
+
+                if (role==='teacher'){
+                    url=`http://localhost:3000/api/v1/teacher/register-user`
                 }
-        
-                const result = await response.json();
-                console.log('Success:', result);
-                // You can also handle success UI or state updates here
-            } catch (error) {
-                console.error('Error:', error);
-                // Handle error UI or state updates here
+                else if (role==='student'){
+                    url=`http://localhost:3000/api/v1/student/register-user`
+                }
+                const response = await axios.post(url,payload)
+                if (response && response.status == 200) {
+                    setAlert({ type: 'success', message: response.data.message });
+                    setTimeout(() => {
+                        navigate('/');
+                    }, 2000);
+                }
+            } 
+            catch (error) {
+                setAlert({ type: 'error', message: error.response.data.message  });
+                console.error("Error:", error);
             }
     };
 
     return (
         <div className="flex flex-wrap justify-center items-center min-h-screen bg-gray-100">
             <div className="flex w-full max-w-4xl bg-white rounded-lg shadow-lg overflow-hidden">
+                  {/* Render Alert with Timeout */}
+                    {alert.type && (
+                        <div className="fixed top-0 left-1/2 transform -translate-x-1/2 z-50">
+                        {alert.type === 'success' ? (
+                            <SuccessAlert message={alert.message} />
+                        ) : (
+                            <FailedAlert message={alert.message} />
+                        )}
+                        </div>
+                    )}
             <div className="hidden md:block w-4/5">
                 <img 
                     src={role === 'student' ? '/assets/student-signup.jpg' : '/assets/teacher-signup.JPG'} 
@@ -99,8 +128,8 @@ const SignupForm = ({role}) => {
                         <label htmlFor="username" className="text-gray-600 font-medium">Full Name</label>
                         <input
                             type="text"
-                            id="username"
-                            {...register('username', { required: 'Username is required' })}
+                            id="fullName"
+                            {...register('fullName', { required: 'Username is required' })}
                             className="w-full mt-1 p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-400"
                             placeholder="Full name"
                         />
@@ -128,9 +157,9 @@ const SignupForm = ({role}) => {
                     <div className="w-full">
                         <label htmlFor="phone" className="text-gray-600 font-medium">Phone Number</label>
                         <input
-                            type="tel"
-                            id="phone"
-                            {...register('phone', { required: 'Phone number is required', minLength: { value: 10, message: 'Phone number must be at least 10 digits' } })}
+                            type="number"
+                            id="phoneNum"
+                            {...register('phoneNum', { required: 'Phone number is required', minLength: { value: 11, message: 'Phone number must be at least 11 digits' } })}
                             className="w-full mt-1 p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-400"
                             placeholder="Phone number"
                         />

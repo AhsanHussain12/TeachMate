@@ -40,7 +40,7 @@ function StudentList() {
   useEffect(() => {
     const fetchData = async () => {
         const url = 'http://localhost:3000/api/v1/teacher/get/students'; // Replace with your API endpoint
-        const token = 'your-jwt-token'; // Replace with your actual JWT token
+        const token = localStorage.getItem('jwtToken');
     
         try {
             const response = await axios.get(url, {
