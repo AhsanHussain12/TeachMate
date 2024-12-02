@@ -66,7 +66,8 @@ function GigCard({ gig, isAppliedGig }) {
                             gig.applicationStatus === 'pending' ? 'bg-orange-600' :
                             gig.applicationStatus === 'approved' ? 'bg-green-600' :
                             gig.applicationStatus === 'rejected' ? 'bg-red-600' : 'bg-gray-400'
-                        }`}>
+                        }`}
+                        >
                             {gig.applicationStatus}
                         </button>
                     )}

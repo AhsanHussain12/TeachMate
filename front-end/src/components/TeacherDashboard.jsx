@@ -47,7 +47,6 @@ function TeacherDashboard() {
           <div className="mt-6">
           <Outlet/>
           </div>
-        
         </main>
       </div>
     )

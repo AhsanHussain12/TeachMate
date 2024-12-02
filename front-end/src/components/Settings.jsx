@@ -4,12 +4,7 @@ import SuccessAlert from './subcomponents/SuccessAlert';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-// {
-//   fullName: 'John Doe',
-//   email: 'johndoe@example.com',
-//   phoneNumber: '123-456-7890',
-//   gender: 'Male',
-// }
+
 
 const Settings = () => {
   const [activeSection, setActiveSection] = useState('profile-info');

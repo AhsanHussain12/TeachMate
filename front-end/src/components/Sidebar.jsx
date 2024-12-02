@@ -1,11 +1,11 @@
 import React from 'react';
-import SidebarItem from './subcomponents/SidebarItem';
-import HomeIcon from '@mui/icons-material/Home';
 import SettingsIcon from '@mui/icons-material/Settings';
+import { adminSidebarConstants, studentSidebarConstants, teacherSidebarConstants } from '../utils/Constants';
+import SidebarItem from './subcomponents/SidebarItem';
 import { NavLink } from 'react-router-dom';
-import { studentSidebarConstants, teacherSidebarConstants } from '../utils/Constants';
+import HomeIcon from '@mui/icons-material/Home';
 
-function Sidebar({ role }) {
+function Sidebar({ role, designation }) {
   // Define sidebar items based on role
   let SidebarItems = [];
   console.log(role)
@@ -27,6 +27,12 @@ function Sidebar({ role }) {
       {...studentSidebarConstants.teachers},
       {icon: SettingsIcon, label: "Settings", route: studentSidebarConstants.settings.route }
     ]; 
+  } if (role === "admin") {
+    SidebarItems = [
+      {...adminSidebarConstants.AssignedGigs},
+      ...(designation === 'teamLead' ? [adminSidebarConstants.PendingGigs] : []),  // array flattened
+      ...(designation === 'teamLead' ? [adminSidebarConstants.ManageAdmins] : [])
+    ];
   }
 
   return (
@@ -55,7 +61,7 @@ function Sidebar({ role }) {
                 } hover:text-gray-900`
               }
             >
-              <SidebarItem Icon={item.icon} label={item.label} />
+              <SidebarItem idebarItem Icon={item.icon} label={item.label} />
             </NavLink>
           ))}
         </div>

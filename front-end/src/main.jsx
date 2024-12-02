@@ -17,6 +17,12 @@ import Settings from './components/Settings.jsx'
 import StudentDashboard from './components/StudentDashboard.jsx'
 import TeacherList from './components/TeacherList.jsx'
 import ProtectedRoute from './components/ProtectedRoute.jsx'
+import AdminDashboard from './components/AdminDashboard.jsx'
+import AssignedGigs from './components/AssignedGigs.jsx'
+import PendingGigs from './components/PendingGigs.jsx'
+import ManageAdmins from './components/ManageAdmins.jsx'
+import MyGigs from './components/MyGigs.jsx'
+import PostGigs from './components/PostGigs.jsx'
 //import Login from './components/LoginModal.jsx'
 
 const router = createBrowserRouter(
@@ -32,11 +38,7 @@ const router = createBrowserRouter(
       <Route index element={<SignUp />} />
     </Route>
 
-    <Route path='/dashboard/teacher' element={
-        <ProtectedRoute>
-          <TeacherDashboard />
-        </ProtectedRoute>
-    }>
+    <Route path='/dashboard/teacher' element={<ProtectedRoute> <TeacherDashboard /> </ProtectedRoute>}>
       <Route path='' element={<HomeCard />} />
       <Route path='students' element={<StudentList/>} />
       <Route path='find-gigs' element={<FindGigs/>} />
@@ -48,11 +50,18 @@ const router = createBrowserRouter(
     <Route path='/dashboard/student' element={<StudentDashboard/>}>
       <Route path='' element={<HomeCard />} />
       <Route path='teachers' element={<TeacherList/>} />
-      {/* <Route path='find-gigs' element={<FindGigs/>} />
-      <Route path='applied-gigs' element={<AppliedGigs/>} />
-      <Route path='gig-details/:gigId/:isApplied' element={<DisplayGig/>} />*/}
+      <Route path='my-gigs' element={<MyGigs/>} />
+      <Route path='post-gig' element={<PostGigs/>} />
       <Route path='settings' element={<Settings/>} /> 
     </Route>
+
+    <Route path='/dashboard/admin' element={<AdminDashboard/>}>
+    <Route path='assigned-gigs' element={<AssignedGigs/>} />
+    <Route path='pending-gigs' element={<PendingGigs/>} />
+    <Route path='manage-admins' element={<ManageAdmins/>} />
+    
+    </Route>
+
     </>
 
   )

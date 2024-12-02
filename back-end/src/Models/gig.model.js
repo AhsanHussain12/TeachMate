@@ -38,6 +38,22 @@ const GIG = {
         })
         console.log(data)
         return data;
+    },
+
+    setGigStatus: async(gigId, status) => {
+        
+        const data = await new Promise((resolve, reject) => {
+            db.query(`
+                UPDATE Gig
+                SET status =?
+                WHERE gigId =?
+            `,[status,gigId],(err) => {
+                if (err) reject(0)
+                resolve(1) // return the number of rows affected
+            })
+        })
+        console.log("gigStatus ",data)
+        return data;
     }
 }
 

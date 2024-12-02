@@ -65,7 +65,7 @@ function FindGigs() {
         <section className="mt-12 flex h-screen w-full">
         <div className="bg-white rounded-2xl shadow-lg p-6 md:p-8 flex flex-col w-full max-w-full h-full overflow-hidden">
             <h1 className="text-white text-3xl font-semibold border-b-2 border-gray-300 pb-2 mb-6 bg-gradient-to-r from-orange-700 to-orange-400 shadow-lg p-2 rounded">
-                GIG BOARD
+                Apply To A GIG
             </h1>
             
             {loading ? (

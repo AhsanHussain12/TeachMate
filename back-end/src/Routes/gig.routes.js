@@ -1,7 +1,7 @@
 import { Router } from "express";
 import GigController from "../Controllers/gig.controller.js";
 
-const GigRouter =Router()
+const GigRouter = Router()
 const gigController = new GigController()
 
 
