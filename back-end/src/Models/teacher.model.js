@@ -119,24 +119,23 @@ const Teacher = {
     getAllGigs: async (tutor_id)=>{
         const data = await new Promise((resolve, reject)=>{
             db.query(` 
-                SELECT 
-                    G.gigId,
-                    G.gigTitle,
-                    G.details,
-                    G.gigType,
-                    G.studentArea,
-                    G.createdAt,
-                    G.expectedFee 
-                FROM 
-                    Gig G
-                WHERE 
-                    G.status = 'open' 
-                    AND NOT EXISTS (
-                        SELECT 1 
-                        FROM TutorGigApplication TGA 
-                        WHERE TGA.gigId = G.gigId 
-                        AND TGA.tutorId = ?  -- teacher's or tutor's ID
-                    );`,[tutor_id],(err,data)=>{
+                    SELECT 
+                        G.gigId,
+                        G.gigTitle,
+                        G.details,
+                        G.gigType,
+                        G.studentArea,
+                        G.createdAt,
+                        G.expectedFee
+                    FROM Gig G
+                    LEFT JOIN TutorGigApplication TGA ON TGA.gigId = G.gigId AND TGA.tutorId = ? -- Check for the specific tutor's applications
+                    LEFT JOIN AdminGigAssignment AGA ON AGA.gigId = G.gigId
+                    WHERE 
+                        AGA.gigId IS NOT NULL -- Only gigs assigned to an admin
+                        AND G.status = 'open' -- Gigs must be open
+                        AND (TGA.tutorId IS NULL); -- Exclude gigs already applied by this tutor
+
+                `,[tutor_id],(err,data)=>{
                 if(err) reject(err)
                 else resolve(data)
             })

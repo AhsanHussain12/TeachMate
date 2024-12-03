@@ -99,25 +99,15 @@ const Student = {
     },
     
 
-    getAllGigs: async (tutor_id) => {
+    getMyGigs: async (tutor_id) => {
         const data = await new Promise((resolve, reject) => {
             db.query(`
                 SELECT 
-                    G.gigId,
-                    G.gigTitle,
-                    G.details,
-                    G.gigType,
-                    G.studentArea,
-                    G.createdAt,
-                    G.expectedFee,
-                    G.status
-                FROM 
-                    Gig G
-                JOIN 
-                    TutorGigApplication TGA ON G.gigId = TGA.gigId
-                WHERE 
-                    TGA.tutorId = ?  -- tutor's ID
-                    AND (G.status = 'open' OR G.status = 'closed');`, [tutor_id], (err, data) => {
+                G.gigId,S.fullName,G.gigTitle,G.studentsInstitute,G.studentArea,G.expectedFee,G.createdAt,G.status,G.details 
+                FROM gig G 
+                natural join student S 
+                WHERE G.studentId=? ;`
+                , [tutor_id], (err, data) => {
                 if (err) reject(err);
                 else resolve(data);
             });
@@ -185,14 +175,14 @@ const Student = {
     },
 
     signUp: async (inputData) => {
-        const { fullName, email, password, gender, phoneNum } = inputData;
+        const { fullName, email, password, gender, phoneNum,educationalStatus,currentClass } = inputData;
         const hashedPassword = generatehashPassword(password);
         const currentDate = new Date().toISOString().split('T')[0];
         console.log(fullName, email, hashedPassword, gender, phoneNum, currentDate);
         const data = await new Promise((resolve, reject) => {
             db.query(`
-                INSERT INTO Student (fullName, email, password, gender, phoneNum, regDate)
-                VALUES (?,?,?,?,?,?)`, [fullName, email, hashedPassword, gender, phoneNum, currentDate], (err) => {
+                INSERT INTO Student (fullName, email, password, gender, phoneNum, regDate, currentClass)
+                VALUES (?,?,?,?,?,?,?)`, [fullName, email, hashedPassword, gender, phoneNum, currentDate,currentClass], (err) => {
                 if (err) reject(0);
                 else resolve(1);
             });
@@ -211,6 +201,27 @@ const Student = {
         return data;
     },
 
+    getMyTeachers: async (studentId) => {
+        const data = await new Promise((resolve, reject) => {
+            db.query(`
+                select 
+                T.fullName,
+                STA.assignedDate,
+                G.gigTitle,
+                G.gigType,
+                T.phoneNum  
+                from tutor T 
+                inner join studenttutorassignment STA on STA.tutorId=T.tutorId
+                inner join gig G on STA.gigId=G.gigId
+                where STA.studentId=?;
+            `, [studentId], (err, data) => {
+                if (err) reject(err);
+                else resolve(data);
+            });
+        });
+        console.log(data);
+        return data; // [{},{}]
+    }
 }
 
 export default Student;

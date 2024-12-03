@@ -49,7 +49,7 @@ function DisplayGig () {
          // Replace with your actual JWT token
         try {
           const url = `http://localhost:3000/api/v1/teacher/post/apply-to-gig/${gigId}`;
-          const token = localStorage.getItem('jwtToken');
+          const token = sessionStorage.getItem('jwtToken');
           console.log(token);
           const response = await axios.post(url,{},{
             headers: {

@@ -1,4 +1,5 @@
-import Student from "../student.model.js";
+import Student from "../Models/student.model.js";
+import TutorGigApplication from "../Models/tutorGigapplication.model.js";
 import { comparePasswords } from "../Utils/pass_Hash.js";
 
 export default class StudentController {
@@ -35,11 +36,11 @@ export default class StudentController {
     };
 
     // Get gigs associated with the student
-    getGigs = async (req, res) => {
+    getStudentGigs = async (req, res) => {
         const userId = req.userId; // Student ID from middleware
         console.log("userId: " + userId);
         try {
-            const gigs = await Student.getAllGigs(userId);
+            const gigs = await Student.getMyGigs(userId);
             res.status(200).json(gigs);
         } catch (error) {
             res.status(500).json({ message: "Server error" });
@@ -59,6 +60,7 @@ export default class StudentController {
 
         try {
             const result = await Student.createGig(userId, gigTitle, studentsInstitute, studentArea, expectedFee, details, gigType);
+            console.log(result);
             res.status(200).json(result);
         } catch (error) {
             res.status(500).json({ message: "Failed to create gig" });
@@ -148,5 +150,30 @@ export default class StudentController {
             console.error(error);
             res.status(500).json({ message: "Signup failed" });
         }
+    };
+
+    getTeachers = async (req, res) => {
+        const userId = req.userId;
+        console.log("userId: " + userId);
+        try {
+            const teachers = await Student.getMyTeachers(userId);
+            res.status(200).json(teachers);
+        } catch (error) {
+            res.status(500).json({ message: 'Server error' });
+        }
+    };
+    getAppliedTutors = async (req, res) => {
+        const {gigId} = req.params
+        console.log("gigId: " + gigId)
+        try {
+            if(!gigId){
+                return res.status(400).json({ message: 'Invalid gigId' });
+            }
+            const teachers = await TutorGigApplication.getTutorsOfGig(gigId,'student');
+            res.status(200).json(teachers);
+        } catch (error) {
+            res.status(500).json({ message: 'Server error' });
+        }
+
     };
 }

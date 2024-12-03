@@ -1,6 +1,7 @@
 import Admin from "../Models/admin.model.js";
 import AdminGigAssignment from "../Models/adminGigassignment.model.js";
 import GIG from "../Models/gig.model.js";
+import StudentTutorAssignment from "../Models/studenttutorassignment.model.js";
 import TutorGigApplication from "../Models/tutorGigapplication.model.js";
 
 export default class AdminController {
@@ -18,6 +19,7 @@ export default class AdminController {
     }
 
     getPendingGigs = async (req, res) => {
+        // get open gigs not assigned to any admins once assigned then should be only visible to teacher via find gigs
         try {
             const data = await Admin.getUnassignedGigs();
             console.log(data);
@@ -41,7 +43,7 @@ export default class AdminController {
     getAppliedTutors = async (req,res) => {
         const {gigId} = req.params
         try {
-            const data = await TutorGigApplication.getTutorsOfGig(gigId)
+            const data = await TutorGigApplication.getTutorsOfGig(gigId,'admin')
             console.log(data);
             res.status(200).json(data);
         } catch (error) {
@@ -62,10 +64,12 @@ export default class AdminController {
                 if (status === "approved"){
                     const gigStatusFlag = await GIG.setGigStatus(gigId, "closed");
                     const applicationStatusFlag = await TutorGigApplication.setApplicationStatus(tutorId,gigId,status)
-                    if(applicationStatusFlag && gigStatusFlag){
+                    const assignTeacherToStudentFlag = await StudentTutorAssignment.assignTeacherToStudent(gigId,tutorId)
+                    if(applicationStatusFlag && gigStatusFlag && assignTeacherToStudentFlag){
                         return res.status(200).json({ message: 'Gig status updated successfully' });
                     }
                     else{
+                        // apply logic for rollback when done with WP course
                         return res.status(400).json({ message: 'Failed to update gig status or application status' });
                     }
                     

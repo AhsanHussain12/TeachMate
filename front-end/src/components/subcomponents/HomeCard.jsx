@@ -11,7 +11,7 @@ const HomeCard = () => {
 
         // fetch User Name and dashboard stats for hometutionCount, OnlinetutionCount and TotalCount
 
-        const token = localStorage.getItem('jwtToken');
+        const token = sessionStorage.getItem('jwtToken');
 
         fetch(`http://localhost:3000/api/v1/teacher/get/my-student-counts`, {
             method: 'GET',
@@ -23,13 +23,13 @@ const HomeCard = () => {
        .then(data => {console.log(data); setdashboardStats(data)})
        .catch(error => console.error('Error fetching user data:', error))
        
-       // retrieve userName from localStorage
-       const storedUserName = localStorage.getItem('userName')
+       // retrieve userName from sessionStorage
+       const storedUserName = sessionStorage.getItem('userName')
         if (storedUserName) {
             setUser(storedUserName);  // Set the state with the stored value
         }
-        // retrieve quote from localStorage as string and the parses it into json object
-        const storedQuote = localStorage.getItem('quote')
+        // retrieve quote from sessionStorage as string and the parses it into json object
+        const storedQuote = sessionStorage.getItem('quote')
         if (storedQuote) {
             // console.log(JSON.parse(storedQuote));
             setQuote(JSON.parse(storedQuote));  // Set the state with the stored value

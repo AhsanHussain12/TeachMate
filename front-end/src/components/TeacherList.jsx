@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import Fuse from 'fuse.js';
-
+import { ClipLoader } from 'react-spinners';
+import axios from 'axios';
 
 
 function TeacherList() {
-  const [teachers, setteachers] = useState( [
-    { name: "Iayan Jaber", AssignedAt: "Asia/Riyadh: GMT+3", Grade: "Grade/Year 12", type: 'online' },
-    { name: "Niki Shrivastava", AssignedAt: "Asia/Dubai: GMT+4", Grade: "Grade/Year 10th to 11th", type: 'home' },
-    { name: "Abdulaziz Alamoudi", AssignedAt: "Asia/Riyadh: GMT+3", Grade: "Grade/Year 6th to 9th", type: 'online' },
-  ]);
+  const [teachers, setTeachers] = useState( []);
   const [search, setSearch] = useState("");
   const [displayedteachers, setDisplayedteachers] = useState(teachers);
+  const [loading, setLoading] = useState(true)
+
 
   const fuse = new Fuse(teachers, {
     keys: ['name', 'Grade', 'type'],  // Fields to search
@@ -30,20 +29,44 @@ function TeacherList() {
     }, 300);  // Debounce delay
 
     return () => clearTimeout(handler); // Clear timeout on component unmount or new search
-  }, [search]);
+  }, [search,teachers]);
 
-// use this part for api call for teacher data
-  // useEffect(()=>{
-  //   fetch()
-  //   .then((res)=>res.json())
-  //   .then((data)=>setteachers(data))
-  //   .catch((error)=> console.log(error))
-  // },[])
+  useEffect(() => {
+    const fetchData = async () => {
+        const url = 'http://localhost:3000/api/v1/student/get/teachers'; // Replace with your API endpoint
+        const token = sessionStorage.getItem('jwtToken');
+    
+        try {
+            const response = await axios.get(url, {
+                headers: {
+                    Authorization: `Bearer ${token}`, // Adding the JWT token in Authorization header
+                },
+            });
+            console.log(response.data);
+            setTeachers(response.data);
+
+        } 
+        catch (error) {
+            console.error('Error fetching data:', error.response?.data || error.message);
+            alert('Error fetching data:', error.response);
+        }
+        finally {
+            setLoading(false); // Hide loading spinner when data is fetched or fetched fails
+        }
+    };
+    fetchData(); 
+},[])
 
   return (
     
     <div className="p-8">
       <h2 className="text-white text-3xl font-semibold border-b-2 border-gray-300 pb-2 mb-6 bg-gradient-to-r from-orange-700 to-orange-400 shadow-lg p-2 rounded">My teachers</h2>
+      {loading ? (
+          <div className="flex items-center justify-center h-full">
+          <ClipLoader color="#3498db" loading={loading} size={50} />
+          </div>
+      ):(
+      <>
       <input
         type="text"
         placeholder="Search a teacher..."
@@ -57,17 +80,22 @@ function TeacherList() {
             <tr className="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
               <th className="py-3 px-6 text-left">teacher Name</th>
               <th className="py-3 px-6 text-left">Assigned At</th>
-              <th className="py-3 px-6 text-left">Grade</th>
+              <th className="py-3 px-6 text-left">GiG</th>
               <th className="py-3 px-6 text-left">Type</th>
+              <th className="py-3 px-6 text-left">Contact Number</th>
             </tr>
           </thead>
           <tbody className="text-gray-700 text-sm font-light">
             {displayedteachers.map((teacher, index) => (
               <tr key={index} className="border-b border-gray-200 hover:bg-gray-100">
-                <td className="py-3 px-6 text-left text-blue-500 hover:underline">{teacher.name}</td>
-                <td className="py-3 px-6 text-left">{teacher.AssignedAt}</td>
-                <td className="py-3 px-6 text-left">{teacher.Grade}</td>
-                <td className="py-3 px-6 text-left">{teacher.type}</td>
+                <td className="py-3 px-6 text-left text-blue-500 hover:underline">{teacher.fullName}</td>
+                <td className="py-3 px-6 text-left">{                
+                new Date(teacher.assignedDate).toLocaleString("en-GB", {
+                dateStyle: "short",
+                })}</td>
+                <td className="py-3 px-6 text-left">{teacher.gigTitle}</td>
+                <td className="py-3 px-6 text-left">{teacher.gigType}</td>
+                <td className="py-3 px-6 text-left">{teacher.phoneNum}</td>
               </tr>
             ))}
           </tbody>
@@ -82,6 +110,8 @@ function TeacherList() {
         </select>
           <span className="ml-4">1 - {displayedteachers.length} of {teachers.length}</span>
       </div>
+      </>
+      )}
     </div>
   );
 };

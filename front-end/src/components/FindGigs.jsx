@@ -39,7 +39,7 @@ function FindGigs() {
     useEffect(() => {
         const fetchData = async () => {
             const url = 'http://localhost:3000/api/v1/teacher/get/gigs'; // Replace with your API endpoint
-            const token = localStorage.getItem('jwtToken'); // Replace with your actual JWT token
+            const token = sessionStorage.getItem('jwtToken'); // Replace with your actual JWT token
         
             try {
                 const response = await axios.get(url, {

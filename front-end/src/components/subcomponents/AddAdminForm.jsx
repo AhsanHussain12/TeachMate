@@ -21,7 +21,7 @@ const AddAdminForm = () => {
 
   // Form submission handler
   const onSubmit = async (payload) => {
-    const token = localStorage.getItem('jwtToken');
+    const token = sessionStorage.getItem('jwtToken');
     console.log(payload);
     try {
         const response = await axios.post(`http://localhost:3000/api/v1/admin/add/admin`, payload,  

@@ -7,7 +7,7 @@ function AdminDashboard() {
   const [admin,setAdmin] = useState({})
   
   useEffect(() => {
-    const token = localStorage.getItem('jwtToken'); // Get the token from local storage
+    const token = sessionStorage.getItem('jwtToken'); // Get the token from local storage
     console.log("dashboard token: " + token)
     fetch(`http://localhost:3000/api/v1/admin/get/admin-info`, {
       method: 'GET',
@@ -19,7 +19,7 @@ function AdminDashboard() {
     .then(data => {
       console.log(typeof data)
       setAdmin(data); // Updates the state with the fetched data
-      localStorage.setItem('userName', data); // Saves the data in localStorage  data already string
+      sessionStorage.setItem('userName', data); // Saves the data in sessionStorage  data already string
     })
     .catch(error => console.error('Error fetching Admin Name:', error))
 

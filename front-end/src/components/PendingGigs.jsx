@@ -13,61 +13,61 @@ function PendingGigs() {
     const [reload, setReload] = useState(false);
 
     
-    const fuse = new Fuse(pendingGigs, {
-        keys: ['gigTitle', 'gigType', 'studentsInstitute','expectedFee','studentArea','status'],  // Fields to search
-        threshold: 0.3,                         // Tolerance level
-    });
+const fuse = new Fuse(pendingGigs, {
+    keys: ['gigTitle', 'gigType', 'studentsInstitute','expectedFee','studentArea','status'],  // Fields to search
+    threshold: 0.3,                         // Tolerance level
+});
 
-    useEffect(() => {
-        const handler = setTimeout(() => {
-          if (search.trim() === "") {
-            setDisplayedGIGs(pendingGigs);
-          } else {
-            const results = fuse.search(search).map(result => result.item);
-            setDisplayedGIGs(results);
-          }
-        }, 300);  // Debounce delay
-    
-        return () => clearTimeout(handler); // Clear timeout on component unmount or new search
-      }, [search,pendingGigs]);
+useEffect(() => {
+    const handler = setTimeout(() => {
+      if (search.trim() === "") {
+        setDisplayedGIGs(pendingGigs);
+      } else {
+        const results = fuse.search(search).map(result => result.item);
+        setDisplayedGIGs(results);
+      }
+    }, 300);  // Debounce delay
+
+    return () => clearTimeout(handler); // Clear timeout on component unmount or new search
+}, [search,pendingGigs]);
 
 
-      useEffect(() => {
-        const fetchData = async () => {
-          const url = 'http://localhost:3000/api/v1/admin/get/pending-gigs'; 
-          const token = localStorage.getItem('jwtToken');  
-    
-          try {
-            const response = await axios.get(url, {
-              headers: {
-                Authorization: `Bearer ${token}`,  
-              },
-            });
-            console.log(response.data);
-            setpendingGigs(response.data); 
-          } catch (error) {
+useEffect(() => {
+  const fetchData = async () => {
+    const url = 'http://localhost:3000/api/v1/admin/get/pending-gigs'; 
+    const token = sessionStorage.getItem('jwtToken');  
 
-            if (error.response) {
-              console.error('Error fetching data:', error.response.data);
-              alert(`Error: ${error.response.data.message}`);
-            } 
-            else if (error.request) {
-              // No response received from the server
-              console.error('Error with request:', error.request);
-              alert('No response from server. Please try again later.');
-            } 
-            else {
-              // Something went wrong in setting up the request
-              console.error('Error setting up request:', error.message);
-              alert('An error occurred while setting up the request.');
-            }
-          } finally {
-            setLoading(false); // Hide loading spinner after data is fetched (or error occurs)
-          }
-        };
-    
-        fetchData(); // Call fetchData function inside useEffect
-      }, [reload]);
+    try {
+      const response = await axios.get(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,  
+        },
+      });
+      console.log(response.data);
+      setpendingGigs(response.data); 
+    } catch (error) {
+
+      if (error.response) {
+        console.error('Error fetching data:', error.response.data);
+        alert(`Error: ${error.response.data.message}`);
+      } 
+      else if (error.request) {
+        // No response received from the server
+        console.error('Error with request:', error.request);
+        alert('No response from server. Please try again later.');
+      } 
+      else {
+        // Something went wrong in setting up the request
+        console.error('Error setting up request:', error.message);
+        alert('An error occurred while setting up the request.');
+      }
+    } finally {
+      setLoading(false); // Hide loading spinner after data is fetched (or error occurs)
+    }
+  };
+
+  fetchData(); // Call fetchData function inside useEffect
+}, [reload]);
 
 
     return (

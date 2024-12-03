@@ -78,7 +78,7 @@ export default class TeacherController {
                 if (oldPassword === newPassword) {
                     return res.status(400).json({ message: 'New password cannot be the same as the old one' });
                 }
-                await Teacher.storeTeacherPassword(2,newPassword)
+                await Teacher.storeTeacherPassword(userId,newPassword)
                 return res.status(200).json({ message: 'Password changed successfully' })
             }
 

@@ -29,7 +29,7 @@ useEffect(() => {
 useEffect(() => {   
     const fetchData = async () => {
         try {
-            const token = localStorage.getItem('jwtToken'); 
+            const token = sessionStorage.getItem('jwtToken'); 
             console.log("AdminCard",token)
             if (isAtAssigned) {
                 // get applied tutor list for this gigCard therefore pass gigId in bodys and adminId via token
@@ -78,7 +78,7 @@ const handleTutorSelect = async (tutorId,applicationStatus) => {
     try {
         if(tutorId && (applicationStatus==='approved' || applicationStatus==='rejected')){
             console.log("in post")
-            const token = localStorage.getItem('jwtToken');
+            const token = sessionStorage.getItem('jwtToken');
             const response = await axios.post(`http://localhost:3000/api/v1/admin/post/gig-to-tutor`,{tutorId:tutorId , status:applicationStatus , gigId:gig.gigId},{
                 headers:{Authorization: `Bearer ${token}`}
             })
@@ -135,7 +135,7 @@ const renderTeacherAsOptions = () => {
 // Handle admin selection works correctly
 const handleAdminSelect = async (adminId) => {
     console.log(adminId,gig.gigId)
-    const token = localStorage.getItem('jwtToken');
+    const token = sessionStorage.getItem('jwtToken');
     if(adminId && gig.gigId){
       try{
         const response = await axios.post('http://localhost:3000/api/v1/admin/post/gig-to-admin', { adminId: adminId, gigId: gig.gigId },

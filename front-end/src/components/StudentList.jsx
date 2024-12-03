@@ -15,6 +15,8 @@ function StudentList() {
   const [search, setSearch] = useState("");
   const [displayedStudents, setDisplayedStudents] = useState(students);
   const [loading, setLoading] = useState(true)
+
+  
   const fuse = new Fuse(students, {
     keys: ['name', 'Grade', 'type'],  // Fields to search
     threshold: 0.3,                         // Tolerance level
@@ -40,7 +42,7 @@ function StudentList() {
   useEffect(() => {
     const fetchData = async () => {
         const url = 'http://localhost:3000/api/v1/teacher/get/students'; // Replace with your API endpoint
-        const token = localStorage.getItem('jwtToken');
+        const token = sessionStorage.getItem('jwtToken');
     
         try {
             const response = await axios.get(url, {

@@ -47,8 +47,8 @@ const SignupForm = ({role}) => {
         <div className="w-full">
         <label htmlFor="class" className="text-gray-600 font-medium">Class</label>
         <select
-            id="class"
-            {...register('class', { required: 'Class selection is required' })}
+            id="currentClass"
+            {...register('currentClass', { required: 'Class selection is required' })}
             className="w-full mt-1 p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-400"
         >
             <option value="">Select Class</option>

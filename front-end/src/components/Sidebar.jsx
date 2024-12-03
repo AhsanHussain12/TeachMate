@@ -43,12 +43,14 @@ function Sidebar({ role, designation }) {
       <nav className="mt-10 flex-1">
         <div className="w-full h-full bg-gray-100">
           {/* Home */}
+          {role !== 'student' ?           
           <NavLink
             to=""
             className="p-3 text-sm font-medium text-gray-700 hover:text-gray-900"
           >
             <SidebarItem Icon={HomeIcon} label="Home" />
-          </NavLink>
+          </NavLink> : null } 
+
 
           {/* Dynamically render other sidebar items */}
           {SidebarItems.map((item, index) => (

@@ -35,7 +35,7 @@ function AppliedGigs() {
       useEffect(() => {
         const fetchData = async () => {
             const url = 'http://localhost:3000/api/v1/teacher/get/applied-gigs'; 
-            const token = localStorage.getItem('jwtToken');
+            const token = sessionStorage.getItem('jwtToken');
         
             try {
                 const response = await axios.get(url, {

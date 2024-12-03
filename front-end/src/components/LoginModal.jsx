@@ -17,7 +17,9 @@ function LoginModal({ isOpen, onClose }) {
 
             if (response && response.status == 200) {
 
-                localStorage.setItem('jwtToken', response.data.token); // Store JWT token in local storage
+                sessionStorage.setItem('jwtToken', response.data.token);
+                sessionStorage.setItem('type', response.data.type);
+                console.log("Tokens-> "+ sessionStorage.getItem('jwtToken')) // to verify
                 onClose();  // Close the modal after successful login
                 
                 if(response.data.type) 

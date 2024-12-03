@@ -10,13 +10,36 @@ const Settings = () => {
   const [activeSection, setActiveSection] = useState('profile-info');
   const [alert, setAlert] = useState({ type: "", message: "" });
   const [profile, setProfile] = useState({});
+  const [type, setType] = useState(sessionStorage.getItem('type'))
   const navigate = useNavigate()
+
+
+  const teacherUrls={
+    getProfileUrl: "http://localhost:3000/api/v1/teacher/get/my-profile",
+    updateProfileUrl: "http://localhost:3000/api/v1/teacher/post/my-profile/edit-profile-information",
+    changePasswordUrl: "http://localhost:3000/api/v1/teacher/post/my-profile/change-password",
+  }
+
+  const studentUrls={
+    getProfileUrl: "http://localhost:3000/api/v1/student/get/my-profile",
+    updateProfileUrl: "http://localhost:3000/api/v1/student/post/my-profile/edit-profile-information",
+    changePasswordUrl: "http://localhost:3000/api/v1/student/post/my-profile/change-password",
+  }
 
   // fetch api data for profile information display (complete)
   useEffect(()=>{
     const fetchData = async ()=>{
-      const url = 'http://localhost:3000/api/v1/teacher/get/my-profile'; // Replace with your API endpoint
-      const token = localStorage.getItem('jwtToken');
+
+      let url;
+
+      if(type === 'teacher'){
+        url=teacherUrls.getProfileUrl
+      }
+      else if(type ==='student'){
+        url=studentUrls.getProfileUrl
+      }
+
+      const token = sessionStorage.getItem('jwtToken');
       try {
        const response = await axios.get(url,{
           headers: {
@@ -61,8 +84,15 @@ const Settings = () => {
     else {
       try {
         
-        const url="http://localhost:3000/api/v1/teacher/post/my-profile/change-password"
-        const token = localStorage.getItem('jwtToken'); 
+        let url;
+
+        if(type === 'teacher'){
+          url=teacherUrls.changePasswordUrl
+        }
+        else if(type ==='student'){
+         url=studentUrls.changePasswordUrl
+        }
+        const token = sessionStorage.getItem('jwtToken'); 
 
         const response = await axios.post(url,
           {
@@ -109,8 +139,15 @@ const Settings = () => {
       return;
     }
     
-    const url="http://localhost:3000/api/v1/teacher/post/my-profile/edit-profile-information"
-    const token = localStorage.getItem('jwtToken'); 
+    let url;
+
+    if(type === 'teacher'){
+      url=teacherUrls.updateProfileUrl
+    }
+    else if(type ==='student'){
+     url=studentUrls.updateProfileUrl
+    }
+    const token = sessionStorage.getItem('jwtToken'); 
     try {
       const response = await axios.post(url, 
         {

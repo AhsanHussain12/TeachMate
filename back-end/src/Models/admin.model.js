@@ -25,19 +25,22 @@ const Admin = {
     getUnassignedGigs: async () => {
         const data = await new Promise((resolve, reject) => {
             db.query(`
-                    SELECT 
-                    G.gigId,
-                    G.gigTitle,
-                    G.details,
-                    G.expectedFee,
-                    G.gigType,
-                    G.createdAt
-                    FROM 
-                    Gig G
-                    LEFT JOIN 
-                    AdminGigAssignment AGA ON G.gigId = AGA.gigId
-                    WHERE 
-                    AGA.gigId IS NULL; `,(err, result) => {
+                SELECT 
+                G.gigId,
+                G.gigTitle,
+                G.details,
+                G.expectedFee,
+                G.gigType,
+                G.createdAt,
+                AGA.adminId
+                FROM 
+                Gig G
+                LEFT JOIN 
+                AdminGigAssignment AGA ON G.gigId = AGA.gigId
+                WHERE 
+                AGA.gigId IS NULL AND     -- no admin assigned yet
+                G.status = 'open'        ;   -- Gig status is open
+                 `,(err, result) => {
                 if(err) reject(err)
                 resolve(result)
             })

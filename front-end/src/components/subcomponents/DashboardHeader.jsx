@@ -6,9 +6,7 @@ function DashboardHeader ({ user }) {
   const navigate = useNavigate();
   const handleLogout = () => {  
     console.log("Logged out");
-    // localStorage.removeItem('jwtToken');
-    // localStorage.removeItem('userName');
-    localStorage.clear();
+    sessionStorage.clear();
     navigate("/");
 
   }

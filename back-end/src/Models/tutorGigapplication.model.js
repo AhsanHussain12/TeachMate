@@ -2,9 +2,10 @@ import db from "../index.js"
 
 
 const TutorGigApplication = {
-    getTutorsOfGig: async(gigId)=>{
-        const data = await new Promise((resolve, reject) => {
-            db.query(`
+    getTutorsOfGig: async(gigId,calledFor)=>{
+        let query;
+        if(calledFor === 'admin'){
+            query = `
                     select 
                     TGA.tutorId,
                     T.fullName,
@@ -13,7 +14,21 @@ const TutorGigApplication = {
                     T.regDate
                     from tutor T
                     inner join TutorGigApplication TGA on TGA.tutorId=T.tutorId
-                    where TGA.gigId = ? and TGA.applicationStatus='pending';`,[gigId],(err, result) => {
+                    where TGA.gigId = ? and TGA.applicationStatus='pending';`
+        }
+        else if(calledFor === 'student'){
+            query = `
+            SELECT
+            TGA.tutorId,
+            T.fullName,
+            TGA.applicationStatus
+            from tutor T
+            inner join TutorGigApplication TGA on TGA.tutorId=T.tutorId
+            where TGA.gigId =? ;
+            `
+        }
+        const data = await new Promise((resolve, reject) => {
+            db.query(query,[gigId],(err, result) => {
 
                 if(err) reject(err)
                 else resolve(result)
@@ -32,6 +47,7 @@ const TutorGigApplication = {
         console.log("ApplicationStatus ",data)
         return data; // 1 for success, 0 for failure
     },
+
 }
 
 export default TutorGigApplication;

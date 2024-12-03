@@ -11,7 +11,7 @@ function RemoveAdmin() {
   const [loading, setLoading] = useState(false); // Add loading state
   const [alert, setAlert] = useState({ type: "", message: "" });
   const [reload, setReload] = useState(false); // Add reload state to trigger useEffect for fetching data again
-  const token = localStorage.getItem('jwtToken');
+  const token = sessionStorage.getItem('jwtToken');
 
   const handleRemoveAdmin = async (id) => {
 
