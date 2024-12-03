@@ -23,8 +23,29 @@ import PendingGigs from './components/PendingGigs.jsx'
 import ManageAdmins from './components/ManageAdmins.jsx'
 import MyGigs from './components/MyGigs.jsx'
 import PostGigs from './components/PostGigs.jsx'
-//import Login from './components/LoginModal.jsx'
+import AdminHome from './components/AdminHome.jsx'
+import { Line } from 'react-chartjs-2';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+} from 'chart.js';
 
+// Register necessary components globally
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
@@ -47,18 +68,18 @@ const router = createBrowserRouter(
       <Route path='settings' element={<Settings/>} />
     </Route>
 
-    <Route path='/dashboard/student' element={<StudentDashboard/>}>
-  <Route path='my-gigs' index element={<MyGigs />} /> {/* This makes MyGigs the default */}
-  <Route path='teachers' element={<TeacherList/>} />
-  <Route path='post-gig' element={<PostGigs/>} />
-  <Route path='settings' element={<Settings/>} /> 
-</Route>
+    <Route path='/dashboard/student' element={<ProtectedRoute> <StudentDashboard/> </ProtectedRoute>}>
+      <Route path='my-gigs' index element={<MyGigs />} /> {/* This makes MyGigs the default */}
+      <Route path='teachers' element={<TeacherList/>} />
+      <Route path='post-gig' element={<PostGigs/>} />
+      <Route path='settings' element={<Settings/>} /> 
+    </Route>
 
     <Route path='/dashboard/admin' element={<ProtectedRoute> <AdminDashboard/> </ProtectedRoute>}>
-    <Route path='assigned-gigs' element={<AssignedGigs/>} />
-    <Route path='pending-gigs' element={<PendingGigs/>} />
-    <Route path='manage-admins' element={<ManageAdmins/>} />
-    
+      <Route path='' element={<AdminHome/>} />
+      <Route path='assigned-gigs' element={<AssignedGigs/>} />
+      <Route path='pending-gigs' element={<PendingGigs/>} />
+      <Route path='manage-admins' element={<ManageAdmins/>} />
     </Route>
 
     </>

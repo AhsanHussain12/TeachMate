@@ -1,0 +1,8 @@
+  const queries = [
+    `SELECT COUNT(*) AS totalTutors FROM Tutor`,
+    `SELECT COUNT(DISTINCT tutorId) AS activeTutors FROM TutorGigApplication WHERE applicationStatus = 'approved'`,
+    `SELECT COUNT(*) AS totalGigs FROM Gig`,
+    `SELECT COUNT(DISTINCT gigId) AS completedGigs FROM StudentTutorAssignment`,
+    `SELECT DATE(createdAt) AS date, COUNT(*) AS gigCount FROM Gig GROUP BY DATE(createdAt) ORDER BY date DESC`,
+    `SELECT DATE_FORMAT(regDate, '%Y-%m') AS month, COUNT(*) AS studentEngagement FROM Student WHERE regDate BETWEEN '2023-01-01' AND '2023-12-31' GROUP BY month ORDER BY month DESC`
+  ];
