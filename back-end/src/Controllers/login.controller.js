@@ -19,7 +19,7 @@ const userlogin = async (req, res) => {
       
 
       //use comparePasswords(password, user.password) after a signup is done till then for dummy data do simple compare
-      if (password === user.password || comparePasswords(password, user.password)){
+      if (comparePasswords(password, user.password)){
         const token = jwt.sign({ email: user.email, id: user[id_key]}, SECRET_KEY);
         // Return response
         return res.status(200).json({

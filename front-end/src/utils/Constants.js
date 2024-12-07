@@ -38,7 +38,7 @@ const studentSidebarConstants = {
     myGig :{    
         icon : WorkIcon,
         label:"MY GiGs",
-        route: '/dashboard/student/my-gigs'
+        route: '/dashboard/student/'   // since my gig is now landing page of dashboard
     },
     settings :{    
       route: '/dashboard/student/settings'

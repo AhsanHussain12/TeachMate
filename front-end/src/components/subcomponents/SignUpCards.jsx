@@ -9,8 +9,8 @@ export default function SignUpCards() {
           <div className="flex space-x-4"> {/* This div wraps the cards and creates space between them */}
             {/* Student Card */}
             <div
-              className="flex flex-col items-center p-10 bg-white shadow-lg rounded-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer w-100 hover:bg-red-100"
-              onClick={(e) => { setStudent(true); }} // Logic preserved
+              className="flex flex-col items-center p-8 bg-white shadow-lg rounded-xl hover:shadow-2xl transition-shadow duration-300 cursor-pointer w-full h-full hover:bg-gradient-to-r hover:from-orange-700 hover:to-orange-800 transform hover:scale-100"
+              onClick={() => { setStudent(true); }}
             >
               <img
                 src="/assets/student.jpg" // Ensure this path is correct
@@ -24,8 +24,8 @@ export default function SignUpCards() {
     
             {/* Teacher Card */}
             <div
-              className="flex flex-col items-center p-10 bg-white shadow-lg rounded-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer w-100 hover:bg-red-100"
-              onClick={() => { setTeacher(true); }} // Logic preserved
+              className="flex flex-col items-center p-8 bg-white shadow-lg rounded-xl hover:shadow-2xl transition-shadow duration-300 cursor-pointer w-full h-full hover:bg-gradient-to-r hover:from-orange-700 hover:to-orange-800 transform hover:scale-100"
+              onClick={() => { setTeacher(true); }}
             >
               <img
                 src="/assets/teacher.jpg" // Ensure this path is correct

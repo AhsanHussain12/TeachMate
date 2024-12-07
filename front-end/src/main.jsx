@@ -69,7 +69,7 @@ const router = createBrowserRouter(
     </Route>
 
     <Route path='/dashboard/student' element={<ProtectedRoute> <StudentDashboard/> </ProtectedRoute>}>
-      <Route path='my-gigs' index element={<MyGigs />} /> {/* This makes MyGigs the default */}
+      <Route path='' index element={<MyGigs />} /> {/* This makes MyGigs the default */}
       <Route path='teachers' element={<TeacherList/>} />
       <Route path='post-gig' element={<PostGigs/>} />
       <Route path='settings' element={<Settings/>} /> 
